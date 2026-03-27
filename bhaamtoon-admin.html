@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHAAMTOON — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #111118;
+    --border: #1e1e2e;
+    --cyan: #00f5d4;
+    --orange: #ff6b2b;
+    --yellow: #ffd60a;
+    --green: #00e676;
+    --red: #ff1744;
+    --text: #e8e8f0;
+    --muted: #6b6b85;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; min-height: 100vh; }
+
+  /* LOGIN SCREEN */
+  .login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at center, #0d1a18 0%, #0a0a0f 70%);
+  }
+  .login-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 36px;
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .login-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 4px; margin-bottom: 4px; }
+  .login-logo span { color: var(--cyan); }
+  .login-logo em { color: var(--orange); font-style: normal; }
+  .login-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 3px; margin-bottom: 32px; }
+  .login-box input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 16px; border-radius: 6px;
+    font-family: 'Manrope', sans-serif; font-size: 1rem;
+    outline: none; text-align: center; letter-spacing: 4px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .login-box input:focus { border-color: var(--cyan); }
+  .login-btn {
+    width: 100%; padding: 14px; background: var(--cyan); color: #000;
+    border: none; border-radius: 6px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 3px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--yellow); }
+  .login-error { color: var(--orange); font-size: 0.8rem; margin-top: 12px; font-family: 'Space Mono', monospace; display: none; }
+
+  /* DASHBOARD */
+  .dashboard { display: none; }
+
+  header {
+    background: rgba(10,10,15,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; }
+  .logo span { color: var(--cyan); }
+  .logo em { color: var(--orange); font-style: normal; }
+  .header-right { display: flex; gap: 12px; align-items: center; }
+  .live-dot { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
+  .live-tag { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--green); }
+
+  .logout-btn {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 1px;
+    padding: 6px 12px; border-radius: 4px; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+  .main { padding: 28px 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* SUMMARY CARDS */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .sum-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px 18px; }
+  .sum-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; margin-bottom: 8px; }
+  .sum-value { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; }
+  .sum-value.cyan { color: var(--cyan); }
+  .sum-value.yellow { color: var(--yellow); }
+  .sum-value.green { color: var(--green); }
+  .sum-value.orange { color: var(--orange); }
+
+  /* WINNERS SECTION */
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; margin-bottom: 16px; }
+  .section-title span { color: var(--cyan); }
+
+  .winners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .winner-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; position: relative; overflow: hidden; }
+  .winner-card.has-winner { border-color: rgba(0,230,118,0.3); }
+  .winner-card.no-bids { border-color: rgba(107,107,133,0.3); opacity: 0.6; }
+  .winner-slot { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--cyan); letter-spacing: 2px; margin-bottom: 6px; }
+  .winner-scene { font-weight: 800; font-size: 0.9rem; margin-bottom: 14px; }
+  .winner-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--green); line-height: 1; margin-bottom: 4px; }
+  .winner-link { font-size: 0.75rem; color: var(--cyan); font-family: 'Space Mono', monospace; margin-bottom: 8px; word-break: break-all; }
+  .winner-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--yellow); }
+  .winner-note { font-size: 0.75rem; color: var(--muted); margin-top: 6px; font-style: italic; }
+  .winner-crown { position: absolute; top: 12px; right: 14px; font-size: 1.4rem; }
+  .no-winner-text { color: var(--muted); font-size: 0.85rem; font-family: 'Space Mono', monospace; }
+
+  /* ACTION BUTTONS */
+  .actions-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+  .action-btn {
+    font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 1px; padding: 10px 18px; border-radius: 4px;
+    cursor: pointer; border: none; transition: opacity 0.2s, transform 0.1s;
+  }
+  .action-btn:hover { opacity: 0.85; transform: scale(1.03); }
+  .action-btn.export { background: var(--cyan); color: #000; }
+  .action-btn.export-winners { background: var(--green); color: #000; }
+  .action-btn.refresh { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .action-btn.clear-all { background: var(--red); color: #fff; }
+
+  /* ALL BIDS TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 40px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  thead tr { background: var(--card); border-bottom: 2px solid var(--border); }
+  th { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; padding: 12px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody tr.top-bid { background: rgba(0,230,118,0.04); }
+  td { padding: 12px 14px; vertical-align: middle; }
+  .td-slot { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--cyan); }
+  .td-name { font-weight: 700; }
+  .td-link { color: var(--cyan); font-size: 0.75rem; word-break: break-all; }
+  .td-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--yellow); }
+  .td-amount.top { color: var(--green); }
+  .td-note { color: var(--muted); font-size: 0.75rem; max-width: 180px; }
+  .td-time { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+  .crown-badge { background: var(--green); color: #000; font-size: 0.55rem; font-family: 'Space Mono', monospace; padding: 2px 6px; border-radius: 2px; margin-left: 6px; letter-spacing: 1px; }
+
+  .empty-table { text-align: center; padding: 40px; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .filter-bar select, .filter-bar input {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 4px; font-family: 'Space Mono', monospace;
+    font-size: 0.7rem; outline: none;
+  }
+  .filter-bar select:focus, .filter-bar input:focus { border-color: var(--cyan); }
+  .total-count { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-left: auto; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cyan); color: #000; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; padding: 10px 20px; border-radius: 6px; z-index: 999; transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275); white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--orange); }
+
+  @media (max-width: 600px) {
+    .main { padding: 16px; }
+    .summary { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo"><span>BHAAM</span><em>TOON</em></div>
+    <div class="login-sub">// ADMIN DASHBOARD</div>
+    <input type="password" id="passwordInput" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
+    <button class="login-btn" onclick="login()">ENTER →</button>
+    <div class="login-error" id="loginError">Wrong password!</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+
+  <header>
+    <div class="logo"><span>BHAAM</span><em>TOON</em> <span style="font-size:0.9rem; color:var(--muted)">ADMIN</span></div>
+    <div class="header-right">
+      <div class="live-tag"><span class="live-dot"></span>LIVE</div>
+      <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- SUMMARY -->
+    <div class="summary" id="summaryCards">
+      <div class="sum-card"><div class="sum-label">TOTAL BIDS</div><div class="sum-value cyan" id="sumTotal">—</div></div>
+      <div class="sum-card"><div class="sum-label">TOTAL REVENUE</div><div class="sum-value yellow" id="sumRevenue">—</div></div>
+      <div class="sum-card"><div class="sum-label">SLOTS WITH BIDS</div><div class="sum-value green" id="sumSlots">—</div></div>
+      <div class="sum-card"><div class="sum-label">TOP BID</div><div class="sum-value orange" id="sumTopBid">—</div></div>
+    </div>
+
+    <!-- WINNERS -->
+    <div class="section-title">🏆 CURRENT <span>WINNERS</span></div>
+    <div class="winners-grid" id="winnersGrid">
+      <div style="color:var(--muted); font-family:monospace; font-size:0.8rem;">Loading...</div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions-bar">
+      <button class="action-btn export" onclick="exportAllCSV()">⬇ EXPORT ALL BIDS (CSV)</button>
+      <button class="action-btn export-winners" onclick="exportWinnersCSV()">🏆 EXPORT WINNERS ONLY</button>
+      <button class="action-btn refresh" onclick="loadData()">↻ REFRESH</button>
+    </div>
+
+    <!-- ALL BIDS TABLE -->
+    <div class="section-title">📋 ALL <span>BIDS</span></div>
+    <div class="filter-bar">
+      <select id="filterSlot" onchange="renderTable()">
+        <option value="all">All Slots</option>
+        <option value="slot1">Scene 01 — Opening Banner</option>
+        <option value="slot2">Scene 03 — Office Wall</option>
+        <option value="slot3">Scene 05 — Phone Screen</option>
+        <option value="slot4">Scene 07 — Shop Sign</option>
+        <option value="slot5">End Card</option>
+      </select>
+      <select id="filterSort" onchange="renderTable()">
+        <option value="time_desc">Newest First</option>
+        <option value="amount_desc">Highest Bid First</option>
+        <option value="amount_asc">Lowest Bid First</option>
+      </select>
+      <input type="text" id="filterSearch" placeholder="Search name..." oninput="renderTable()">
+      <span class="total-count" id="totalCount"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>SLOT</th>
+            <th>NAME / BRAND</th>
+            <th>INSTAGRAM / LINK</th>
+            <th>BID AMOUNT</th>
+            <th>WHAT TO SHOW</th>
+            <th>TIME</th>
+          </tr>
+        </thead>
+        <tbody id="bidsTableBody">
+          <tr><td colspan="6" class="empty-table">Loading bids...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─── PASSWORD ───
+  const ADMIN_PASSWORD = 'bhaamtoon2026'; // Change this to your own password!
+
+  function login() {
+    const pw = document.getElementById('passwordInput').value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      initDashboard();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('passwordInput').value = '';
+  }
+
+  // ─── SUPABASE ───
+  const SUPABASE_URL = 'https://uewlbcjfesjklzmdisjj.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const SLOT_NAMES = {
+    slot1: 'Scene 01 — Opening Banner',
+    slot2: 'Scene 03 — Office Wall',
+    slot3: 'Scene 05 — Phone Screen',
+    slot4: 'Scene 07 — Shop Sign',
+    slot5: 'End Card Shoutout'
+  };
+
+  let allBids = [];
+  let topBidPerSlot = {};
+
+  async function initDashboard() {
+    await loadData();
+    subscribeRealtime();
+  }
+
+  async function loadData() {
+    const { data, error } = await db
+      .from('bids')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) { showToast('Error loading bids!', true); return; }
+
+    allBids = data || [];
+    computeTopBids();
+    renderSummary();
+    renderWinners();
+    renderTable();
+    showToast('✅ Data refreshed!');
+  }
+
+  function computeTopBids() {
+    topBidPerSlot = {};
+    for (const bid of allBids) {
+      if (!topBidPerSlot[bid.slot_id] || bid.bid_amount > topBidPerSlot[bid.slot_id].bid_amount) {
+        topBidPerSlot[bid.slot_id] = bid;
+      }
+    }
+  }
+
+  // ─── SUMMARY ───
+  function renderSummary() {
+    const total = allBids.length;
+    const slots = Object.keys(topBidPerSlot).length;
+    const topBid = allBids.reduce((max, b) => b.bid_amount > max ? b.bid_amount : max, 0);
+    const totalRevenue = Object.values(topBidPerSlot).reduce((sum, b) => sum + b.bid_amount, 0);
+
+    document.getElementById('sumTotal').textContent = total;
+    document.getElementById('sumSlots').textContent = slots + '/5';
+    document.getElementById('sumTopBid').textContent = topBid > 0 ? '₹' + topBid.toLocaleString('en-IN') : '—';
+    document.getElementById('sumRevenue').textContent = totalRevenue > 0 ? '₹' + totalRevenue.toLocaleString('en-IN') : '—';
+  }
+
+  // ─── WINNERS ───
+  function renderWinners() {
+    const grid = document.getElementById('winnersGrid');
+    grid.innerHTML = Object.entries(SLOT_NAMES).map(([slotId, name]) => {
+      const winner = topBidPerSlot[slotId];
+      if (winner) {
+        return `
+          <div class="winner-card has-winner">
+            <span class="winner-crown">👑</span>
+            <div class="winner-slot">${slotId.toUpperCase()}</div>
+            <div class="winner-scene">${name}</div>
+            <div class="winner-name">${escHtml(winner.bidder_name)}</div>
+            ${winner.bid_link ? `<div class="winner-link">🔗 ${escHtml(winner.bid_link)}</div>` : ''}
+            <div class="winner-amount">₹${winner.bid_amount.toLocaleString('en-IN')}</div>
+            ${winner.bid_note ? `<div class="winner-note">"${escHtml(winner.bid_note)}"</div>` : ''}
+          </div>`;
+      } else {
+        return `
+          <div class="winner-card no-bids">
+            <div class="winner-slot">${slotId.toUpperCase()}</div>
+            <div class="winner-scene">${name}</div>
+            <div class="no-winner-text">No bids yet</div>
+          </div>`;
+      }
+    }).join('');
+  }
+
+  // ─── TABLE ───
+  function renderTable() {
+    const slotFilter = document.getElementById('filterSlot').value;
+    const sortFilter = document.getElementById('filterSort').value;
+    const search = document.getElementById('filterSearch').value.toLowerCase();
+
+    let filtered = allBids.filter(b => {
+      if (slotFilter !== 'all' && b.slot_id !== slotFilter) return false;
+      if (search && !b.bidder_name.toLowerCase().includes(search)) return false;
+      return true;
+    });
+
+    if (sortFilter === 'amount_desc') filtered.sort((a,b) => b.bid_amount - a.bid_amount);
+    else if (sortFilter === 'amount_asc') filtered.sort((a,b) => a.bid_amount - b.bid_amount);
+
+    document.getElementById('totalCount').textContent = filtered.length + ' bids';
+
+    const tbody = document.getElementById('bidsTableBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-table">No bids found</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(b => {
+      const isTop = topBidPerSlot[b.slot_id]?.id === b.id;
+      const time = new Date(b.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `
+        <tr class="${isTop ? 'top-bid' : ''}">
+          <td class="td-slot">${SLOT_NAMES[b.slot_id] || b.slot_id}</td>
+          <td class="td-name">${escHtml(b.bidder_name)}${isTop ? '<span class="crown-badge">👑 WINNER</span>' : ''}</td>
+          <td class="td-link">${b.bid_link ? escHtml(b.bid_link) : '<span style="color:var(--muted)">—</span>'}</td>
+          <td class="td-amount ${isTop ? 'top' : ''}">₹${b.bid_amount.toLocaleString('en-IN')}</td>
+          <td class="td-note">${b.bid_note ? escHtml(b.bid_note) : '<span style="color:var(--muted)">—</span>'}</td>
+          <td class="td-time">${time}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  // ─── EXPORT CSV ───
+  function exportAllCSV() {
+    const rows = [['Slot', 'Name', 'Instagram/Link', 'Bid Amount (₹)', 'What to Show', 'Time', 'Winner?']];
+    for (const b of allBids) {
+      const isTop = topBidPerSlot[b.slot_id]?.id === b.id;
+      rows.push([
+        SLOT_NAMES[b.slot_id] || b.slot_id,
+        b.bidder_name,
+        b.bid_link || '',
+        b.bid_amount,
+        b.bid_note || '',
+        new Date(b.created_at).toLocaleString('en-IN'),
+        isTop ? 'YES' : ''
+      ]);
+    }
+    downloadCSV(rows, 'bhaamtoon-all-bids.csv');
+    showToast('📥 CSV downloaded!');
+  }
+
+  function exportWinnersCSV() {
+    const rows = [['Slot', 'Winner Name', 'Instagram/Link', 'Winning Bid (₹)', 'What to Show']];
+    for (const [slotId, b] of Object.entries(topBidPerSlot)) {
+      rows.push([
+        SLOT_NAMES[slotId] || slotId,
+        b.bidder_name,
+        b.bid_link || '',
+        b.bid_amount,
+        b.bid_note || ''
+      ]);
+    }
+    downloadCSV(rows, 'bhaamtoon-winners.csv');
+    showToast('🏆 Winners CSV downloaded!');
+  }
+
+  function downloadCSV(rows, filename) {
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  }
+
+  // ─── REALTIME ───
+  function subscribeRealtime() {
+    db.channel('admin-channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, () => {
+        loadData();
+      })
+      .subscribe();
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error' : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
