@@ -414,7 +414,7 @@
   <div class="contact-links">
     <a class="contact-link" href="https://instagram.com/bhaamtoon_yt" target="_blank">📸 @bhaamtoon_yt</a>
     <a class="contact-link" href="https://youtube.com/@BHAAMTOON" target="_blank">▶️ BHAAMTOON</a>
-    <a class="contact-link" href="mailto:bhaamtoonextras@gmail.com">📧 bhaamtoonextras@gmail.com</a>
+    <a class="contact-link" href="/cdn-cgi/l/email-protection#781a101919150c1717161d000c0a190b381f15191114561b1715">📧 <span class="__cf_email__" data-cfemail="73111b12121e071c1c1d160b0701120033141e121a1f5d101c1e">[email&#160;protected]</span></a>
     <a class="contact-link" href="#">💬 WhatsApp</a>
   </div>
 </div>
@@ -467,7 +467,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ─── SUPABASE SETUP ───
   const SUPABASE_URL = 'https://uewlbcjfesjklzmdisjj.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
@@ -655,6 +655,35 @@
     `).join('');
   }
 
+  // ─── ABUSIVE WORD FILTER ───
+  const BAD_WORDS = [
+    // English
+    'fuck','shit','bitch','asshole','bastard','damn','crap','dick','pussy','cock',
+    'cunt','whore','slut','nigger','faggot','retard',
+    // Hindi (roman)
+    'madarchod','bhenchod','chutiya','gaandu','randi','harami','saala','kamina',
+    'mc','bc','loda','lavda','bhosdi','gandu','sala','bakrichod','bhosdike',
+    'chutiye','maaderchod','bhenchodd','choot','lund','maa ki','teri maa',
+    'bsdk','maderchod','bhosdk'
+  ];
+
+  function containsBadWord(text) {
+    const lower = text.toLowerCase().replace(/\s+/g,'');
+    return BAD_WORDS.some(word => lower.includes(word.replace(/\s+/g,'')));
+  }
+
+  // ─── CHECK IF NAME TAKEN BY ANOTHER DEVICE ───
+  async function isNameTakenByOtherDevice(name) {
+    const { data, error } = await db
+      .from('bids')
+      .select('device_id')
+      .ilike('bidder_name', name)
+      .limit(1);
+    if (error || !data || data.length === 0) return false;
+    // If the only record with this name belongs to this device, it's fine
+    return data[0].device_id !== DEVICE_ID;
+  }
+
   // ─── SUBMIT BID ───
   async function submitBid() {
     const name = document.getElementById('bidName').value.trim();
@@ -664,6 +693,15 @@
 
     if (!name) { showToast('Please enter your name!', true); return; }
     if (!amount || amount <= 0) { showToast('Please enter a valid bid amount!', true); return; }
+
+    // Abusive word check — name
+    if (containsBadWord(name)) {
+      showToast('⚠️ Please use a clean brand name!', true); return;
+    }
+    // Abusive word check — note
+    if (note && containsBadWord(note)) {
+      showToast('⚠️ Please keep your message clean!', true); return;
+    }
 
     const topBid = topBids[currentSlot] || 0;
     if (amount <= topBid) {
@@ -681,6 +719,19 @@
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
+    btn.textContent = 'CHECKING...';
+
+    // Check if name is taken by a different device (only for first-time bidders)
+    if (!savedInfo) {
+      const taken = await isNameTakenByOtherDevice(name);
+      if (taken) {
+        showToast(`❌ "${name}" is already taken! Use a different name.`, true);
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT BID →';
+        return;
+      }
+    }
+
     btn.textContent = 'SUBMITTING...';
 
     const { error } = await db.from('bids').insert([{
@@ -816,17 +867,4 @@
 
   // Click to toss the coin
   coin.style.pointerEvents = 'auto';
-  coin.style.cursor = 'pointer';
-  coin.addEventListener('click', () => {
-    velX = (Math.random() - 0.5) * 18;
-    velY = 8 + Math.random() * 6;
-  });
-
-  updateCoin();
-
-  // ─── INIT ───
-  loadAllTopBids();
-  subscribeRealtime();
-</script>
-</body>
-</html>
+  coin.style.c
