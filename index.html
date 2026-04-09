@@ -271,6 +271,19 @@
     padding: 4px 0;
   }
 
+  /* ─── OTP STEP ─── */
+  .otp-step { padding: 8px 0 4px; }
+  .otp-step .otp-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 4px; }
+  .otp-step .otp-title span { color: var(--cyan); }
+  .otp-step .otp-sub { font-size: 0.78rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 20px; line-height: 1.5; }
+  .otp-boxes { display: flex; gap: 8px; margin-top: 4px; }
+  .otp-box { width: 44px; height: 52px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 1.4rem; font-family: 'Bebas Neue', sans-serif; text-align: center; outline: none; transition: border-color 0.2s; }
+  .otp-box:focus { border-color: var(--cyan); }
+  .otp-verified { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-family: 'Space Mono', monospace; color: var(--cyan); background: rgba(0,245,212,0.08); border: 1px solid rgba(0,245,212,0.25); padding: 8px 14px; border-radius: 6px; margin-bottom: 16px; }
+  .resend-link { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 10px; cursor: pointer; }
+  .resend-link span { color: var(--cyan); text-decoration: underline; cursor: pointer; }
+  .resend-link span.disabled { color: var(--muted); text-decoration: none; cursor: default; }
+
   /* Closed state — grey out slot cards */
   body.bidding-closed .slot-card {
     opacity: 0.6;
@@ -538,14 +551,49 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
 
-    <div id="modalForm">
+    <!-- STEP 1: Email OTP -->
+    <div id="otpStep">
+      <div class="otp-step">
+        <div class="modal-scene-tag" id="otpSceneTag">// VERIFY TO BID</div>
+        <div class="otp-title">VERIFY YOUR <span>EMAIL</span></div>
+        <div class="otp-sub">One email = one identity.<br>We send a 6-digit code to your inbox — free, instant, no spam.</div>
+
+        <!-- Email input (hidden after send) -->
+        <div id="emailInputSection">
+          <label>YOUR EMAIL ADDRESS *</label>
+          <input type="email" id="emailInput" placeholder="you@gmail.com" autocomplete="email" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.9rem;outline:none;">
+          <div class="min-bid-note" style="margin-top:8px;">We only use this to prevent fake bids. Not stored publicly.</div>
+          <button class="modal-submit" id="sendOtpBtn" onclick="sendOTP()" style="margin-top:18px;">SEND CODE →</button>
+        </div>
+
+        <!-- OTP verify (shown after send) -->
+        <div id="otpVerifySection" style="display:none;">
+          <div class="min-bid-note" style="margin-top:0;margin-bottom:14px;color:var(--cyan);">📧 Check your inbox — code sent to <span id="sentToEmail"></span></div>
+          <label>ENTER 6-DIGIT CODE</label>
+          <div class="otp-boxes">
+            <input class="otp-box" id="o1" maxlength="1" type="tel" oninput="otpInput(this,'o2')" onkeydown="otpBack(event,this,'')">
+            <input class="otp-box" id="o2" maxlength="1" type="tel" oninput="otpInput(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+            <input class="otp-box" id="o3" maxlength="1" type="tel" oninput="otpInput(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+            <input class="otp-box" id="o4" maxlength="1" type="tel" oninput="otpInput(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+            <input class="otp-box" id="o5" maxlength="1" type="tel" oninput="otpInput(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+            <input class="otp-box" id="o6" maxlength="1" type="tel" oninput="otpInput(this,'')"   onkeydown="otpBack(event,this,'o5')">
+          </div>
+          <button class="modal-submit" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:18px;">VERIFY →</button>
+          <div class="resend-link" id="resendRow">Didn't get it? <span id="resendBtn" class="disabled">Resend in <span id="resendCountdown">30</span>s</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Bid Form (shown after OTP verified) -->
+    <div id="modalForm" style="display:none;">
+      <div class="otp-verified">✅ Email verified — <span id="verifiedEmail"></span></div>
       <div class="modal-scene-tag" id="modalSceneTag">// SCENE 01</div>
       <h2>PLACE YOUR <span>BID</span></h2>
       <div class="modal-current-bid">Current Top Bid: <span id="modalCurrentBid">₹—</span></div>
 
       <label>YOUR NAME / BRAND NAME *</label>
       <input type="text" id="bidName" placeholder="e.g. Raj's Chai Shop" autocomplete="off">
-      <div class="min-bid-note" id="nameHint" style="margin-top:6px;">Your name will be locked to this device after first bid</div>
+      <div class="min-bid-note" id="nameHint" style="margin-top:6px;">Your name will be locked to your phone number after first bid</div>
 
       <label>INSTAGRAM / YOUTUBE / WEBSITE (optional)</label>
       <input type="text" id="bidLink" placeholder="e.g. instagram.com/myshop" autocomplete="off">
@@ -586,12 +634,14 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ─── DEVICE FINGERPRINT ───
-  // Generate a unique ID for this device and store it permanently in localStorage
+  // ─── EMAIL OTP STATE ───
+  let verifiedEmail = null;   // set once OTP is confirmed
+  let resendTimer = null;
+
+  // ─── DEVICE FINGERPRINT (kept as secondary signal) ───
   function getDeviceId() {
     let id = localStorage.getItem('bt_device_id');
     if (!id) {
-      // Create a fingerprint from browser properties + random seed
       const raw = navigator.userAgent + navigator.language + screen.width + screen.height + new Date().getTimezoneOffset() + Math.random().toString(36).slice(2);
       id = btoa(raw).replace(/[^a-zA-Z0-9]/g, '').slice(0, 32);
       localStorage.setItem('bt_device_id', id);
@@ -599,18 +649,144 @@
     return id;
   }
 
-  // Get saved device info
   function getDeviceInfo() {
     return JSON.parse(localStorage.getItem('bt_info') || 'null');
   }
 
-  // Save all info permanently to this device
-  function saveDeviceInfo(name, link, note) {
-    localStorage.setItem('bt_info', JSON.stringify({ name, link, note }));
-    localStorage.setItem('bt_name', name); // keep bt_name in sync
+  function saveDeviceInfo(name, link, note, email) {
+    localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email }));
+    localStorage.setItem('bt_name', name);
   }
 
   const DEVICE_ID = getDeviceId();
+
+  // ─── OTP: SEND (Email) ───
+  async function sendOTP() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Enter a valid email address!', true); return; }
+
+    const btn = document.getElementById('sendOtpBtn');
+    btn.disabled = true;
+    btn.textContent = 'SENDING...';
+
+    const { error } = await db.auth.signInWithOtp({
+      email: email,
+      options: { shouldCreateUser: true }
+    });
+
+    if (error) {
+      showToast('Failed to send code: ' + error.message, true);
+      btn.disabled = false;
+      btn.textContent = 'SEND CODE →';
+      return;
+    }
+
+    // Switch UI to OTP entry
+    document.getElementById('emailInputSection').style.display = 'none';
+    document.getElementById('otpVerifySection').style.display = 'block';
+    document.getElementById('sentToEmail').textContent = email;
+    document.getElementById('o1').focus();
+    showToast('📧 Code sent to ' + email + '!');
+    startResendCountdown(email);
+  }
+
+  // ─── OTP: VERIFY (Email) ───
+  async function verifyOTP() {
+    const email = document.getElementById('emailInput').value.trim();
+    const token = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+
+    if (token.length < 6) { showToast('Enter all 6 digits!', true); return; }
+
+    const btn = document.getElementById('verifyOtpBtn');
+    btn.disabled = true;
+    btn.textContent = 'VERIFYING...';
+
+    const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
+
+    if (error) {
+      showToast('Wrong code. Try again!', true);
+      btn.disabled = false;
+      btn.textContent = 'VERIFY →';
+      return;
+    }
+
+    // OTP confirmed!
+    verifiedEmail = email;
+    showOTPSuccess(email);
+  }
+
+  function showOTPSuccess(email) {
+    // Switch from OTP step to bid form
+    document.getElementById('otpStep').style.display = 'none';
+    document.getElementById('modalForm').style.display = 'block';
+    document.getElementById('verifiedEmail').textContent = email;
+    document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[currentSlot];
+    updateModalBid(currentSlot);
+    loadLeaderboard(currentSlot);
+
+    // Pre-fill if this email has bid before (check localStorage)
+    const savedInfo = getDeviceInfo();
+    const nameInput = document.getElementById('bidName');
+    const linkInput = document.getElementById('bidLink');
+    const nameHint  = document.getElementById('nameHint');
+
+    if (savedInfo && savedInfo.email === email) {
+      nameInput.value = savedInfo.name;
+      linkInput.value = savedInfo.link || '';
+      nameInput.disabled = true;
+      linkInput.disabled = true;
+      nameHint.textContent = '🔒 Name locked to your email';
+      nameHint.style.color = 'var(--cyan)';
+    } else {
+      nameInput.value = '';
+      linkInput.value = '';
+      nameInput.disabled = false;
+      linkInput.disabled = false;
+      nameHint.textContent = 'Name will be locked to your email after first bid';
+      nameHint.style.color = 'var(--muted)';
+    }
+
+    document.getElementById('bidAmount').value = '';
+    document.getElementById('bidNote').value = '';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'SUBMIT BID →';
+    showToast('✅ Email verified!');
+  }
+
+  // ─── OTP BOX NAVIGATION ───
+  function otpInput(el, nextId) {
+    el.value = el.value.replace(/\D/g,'').slice(-1);
+    if (el.value && nextId) document.getElementById(nextId).focus();
+    // Auto-verify when all 6 filled
+    const all = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+    if (all.length === 6) verifyOTP();
+  }
+  function otpBack(e, el, prevId) {
+    if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
+  }
+
+  // ─── RESEND COUNTDOWN ───
+  function startResendCountdown(email) {
+    let secs = 30;
+    const countEl = document.getElementById('resendCountdown');
+    const btn = document.getElementById('resendBtn');
+    btn.className = 'disabled';
+    countEl.textContent = secs;
+    if (resendTimer) clearInterval(resendTimer);
+    resendTimer = setInterval(() => {
+      secs--;
+      countEl.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(resendTimer);
+        btn.className = '';
+        btn.onclick = () => {
+          startResendCountdown(email);
+          db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+          showToast('📧 Code resent!');
+        };
+      }
+    }, 1000);
+  }
 
   const SLOTS = ['slot1','slot2','slot3','slot4','slot5'];
   const SLOT_NAMES = {
@@ -684,50 +860,28 @@
   // ─── MODAL ───
   function openModal(slotId) {
     currentSlot = slotId;
-    document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
-    updateModalBid(slotId);
-    loadLeaderboard(slotId);
+
+    // Reset modal state
     document.getElementById('successMsg').style.display = 'none';
-    document.getElementById('bidLink').value = '';
-    document.getElementById('bidAmount').value = '';
-    document.getElementById('bidNote').value = '';
+    document.getElementById('modalForm').style.display = 'none';
 
-    const savedInfo = getDeviceInfo();
-    const nameInput = document.getElementById('bidName');
-    const linkInput = document.getElementById('bidLink');
-    const noteInput = document.getElementById('bidNote');
-    const nameHint = document.getElementById('nameHint');
-    const btn = document.getElementById('submitBtn');
-
-    if (savedInfo) {
-      // Returning bidder — pre-fill and lock name + link only
-      nameInput.value = savedInfo.name;
-      linkInput.value = savedInfo.link || '';
-      noteInput.value = savedInfo.note || '';
-      nameInput.disabled = true;
-      linkInput.disabled = true;
-      noteInput.disabled = false;
-      nameHint.textContent = '🔒 Name & Instagram locked to this device';
-      nameHint.style.color = 'var(--cyan)';
+    if (verifiedEmail) {
+      // Already verified this session — skip OTP, go straight to form
+      document.getElementById('otpStep').style.display = 'none';
+      showOTPSuccess(verifiedEmail);
     } else {
-      // First time — all fields free to fill
-      nameInput.value = '';
-      linkInput.value = '';
-      noteInput.value = '';
-      nameInput.disabled = false;
-      linkInput.disabled = false;
-      noteInput.disabled = false;
-      nameHint.textContent = 'Name & Instagram will be locked after your first bid';
-      nameHint.style.color = 'var(--muted)';
+      // Show OTP step
+      document.getElementById('otpStep').style.display = 'block';
+      document.getElementById('otpSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
+      document.getElementById('emailInputSection').style.display = 'block';
+      document.getElementById('otpVerifySection').style.display = 'none';
+      document.getElementById('emailInput').value = '';
+      ['o1','o2','o3','o4','o5','o6'].forEach(id => document.getElementById(id).value = '');
+      const sendBtn = document.getElementById('sendOtpBtn');
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'SEND CODE →';
     }
 
-    document.getElementById('bidAmount').disabled = false;
-
-    btn.disabled = false;
-    btn.textContent = 'SUBMIT BID →';
-    btn.style.background = '';
-    btn.style.color = '';
-    document.getElementById('modalForm').style.display = 'block';
     document.getElementById('bidModal').classList.add('open');
   }
 
@@ -798,6 +952,7 @@
 
     if (!name) { showToast('Please enter your name!', true); return; }
     if (!amount || amount <= 0) { showToast('Please enter a valid bid amount!', true); return; }
+    if (!verifiedEmail) { showToast('Please verify your email first!', true); return; }
 
     // Abusive word check
     if (containsBadWord(name)) { showToast('⚠️ Please use a clean brand name!', true); return; }
@@ -809,10 +964,10 @@
       return;
     }
 
-    // Enforce same info for this device
+    // Enforce same name for this email
     const savedInfo = getDeviceInfo();
-    if (savedInfo && name !== savedInfo.name) {
-      showToast(`This device is locked to "${savedInfo.name}"!`, true);
+    if (savedInfo && savedInfo.email === verifiedEmail && name !== savedInfo.name) {
+      showToast(`This email is locked to "${savedInfo.name}"!`, true);
       document.getElementById('bidName').value = savedInfo.name;
       return;
     }
@@ -821,8 +976,8 @@
     btn.disabled = true;
     btn.textContent = 'CHECKING...';
 
-    // Check if name is taken by a different device (first time only)
-    if (!savedInfo) {
+    // Check if name is taken by a different email (first time only)
+    if (!savedInfo || savedInfo.email !== verifiedEmail) {
       const taken = await isNameTaken(name);
       if (taken) {
         showToast(`❌ "${name}" is already taken! Use a different name.`, true);
@@ -840,7 +995,8 @@
       bid_link: link || null,
       bid_amount: amount,
       bid_note: note || null,
-      device_id: DEVICE_ID
+      device_id: DEVICE_ID,
+      email: verifiedEmail
     }]);
 
     if (error) {
@@ -851,8 +1007,8 @@
       return;
     }
 
-    // Lock all info to this device permanently
-    saveDeviceInfo(name, link, note);
+    // Lock all info to this email permanently in localStorage
+    saveDeviceInfo(name, link, note, verifiedEmail);
 
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
