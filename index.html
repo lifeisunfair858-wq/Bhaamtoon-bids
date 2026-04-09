@@ -387,43 +387,16 @@
   <div class="section-title">AVAILABLE <span>SCENE SLOTS</span></div>
   <div class="section-sub">// Video 13 — "Indian **** stories" · Remember, Bid wisely...!</div>
 
-  <!-- ─── SCENE PREVIEW VIDEO ─── -->
-  <!-- 
-    TO CHANGE VIDEO PER SLOT LATER:
-    Just change the src inside <source> to your new filename
-    e.g. src="slot1-preview.mp4" for slot 1, src="slot2-preview.mp4" for slot 2 etc.
-  -->
-  <div style="margin-bottom: 32px;">
-    <div style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--orange); letter-spacing:3px; margin-bottom:10px;">// SEE HOW YOUR AD LOOKS INSIDE OUR ANIMATION</div>
-    <div style="position:relative; width:100%; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#000;">
-      <video
-        id="previewVideo"
-        autoplay
-        loop
-        muted
-        playsinline
-        style="width:100%; display:block; border-radius:10px;"
-      >
-        <source src="Banner demo.mp4" type="video/mp4">
-        Your browser does not support video.
-      </video>
-      <div style="position:absolute; bottom:10px; left:12px; background:rgba(0,0,0,0.7); font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--cyan); padding:4px 10px; border-radius:4px; letter-spacing:1px;">
-        🎬 SAMPLE SCENE PREVIEW
-      </div>
-    </div>
-    <div style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--muted); margin-top:8px; letter-spacing:1px;">
-      ↑ This is how your brand will appear inside our animation — permanently visible to all viewers
-    </div>
-  </div>
-
   <div class="slots-grid" id="slotsGrid">
 
     <!-- Slot 1 -->
     <div class="slot-card hot" onclick="openModal('slot1')">
       <div class="slot-thumb">
-        <div class="scene-bg"></div>
-        <div class="ad-banner-preview">[ YOUR BANNER HERE ]</div>
-        <div class="scene-character">😤</div>
+        <video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <source src="Demo1.mp4" type="video/mp4">
+        </video>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">0:00 – 0:15</div>
         <span class="badge hot">🔥 HOT</span>
       </div>
@@ -445,9 +418,11 @@
     <!-- Slot 2 -->
     <div class="slot-card" onclick="openModal('slot2')">
       <div class="slot-thumb">
-        <div class="scene-bg" style="background: linear-gradient(135deg, #0a100d 60%, #0a0a1a)"></div>
-        <div style="position:absolute; top:30%; left:15%; width:25%; height:38%; border: 2px dashed rgba(255,107,43,0.5); border-radius:3px; display:flex; align-items:center; justify-content:center;"><span style="font-size:0.5rem; font-family:monospace; color:rgba(255,107,43,0.6)">YOUR AD</span></div>
-        <div class="scene-character">💼</div>
+        <video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <source src="Demo 2.mp4" type="video/mp4">
+        </video>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">0:45 – 1:20</div>
         <span class="badge new">NEW</span>
       </div>
@@ -469,9 +444,11 @@
     <!-- Slot 3 -->
     <div class="slot-card" onclick="openModal('slot3')">
       <div class="slot-thumb">
-        <div class="scene-bg" style="background: linear-gradient(135deg, #10080d 60%, #0d1018)"></div>
-        <div style="position:absolute; top:20%; left:50%; transform:translateX(-50%); width:30%; height:50%; background:#111; border-radius:5px; border:2px solid #333; display:flex; align-items:center; justify-content:center;"><span style="font-size:0.45rem; font-family:monospace; color:rgba(0,245,212,0.7); text-align:center; padding:4px;">YOUR<br>APP/<br>PAGE</span></div>
-        <div class="scene-character" style="bottom:8px; font-size:2rem;">🤳</div>
+        <video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <source src="Demo 3.mp4" type="video/mp4">
+        </video>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">2:10 – 2:30</div>
       </div>
       <div class="slot-info">
@@ -492,9 +469,11 @@
     <!-- Slot 4 -->
     <div class="slot-card" onclick="openModal('slot4')">
       <div class="slot-thumb">
-        <div class="scene-bg" style="background: linear-gradient(135deg, #0d100a 60%, #10100a)"></div>
-        <div style="position:absolute; top:12%; left:50%; transform:translateX(-50%); width:60%; height:20%; background: rgba(255,214,10,0.08); border: 2px dashed rgba(255,214,10,0.4); border-radius:4px; display:flex; align-items:center; justify-content:center;"><span style="font-size:0.55rem; font-family:monospace; color:rgba(255,214,10,0.7)">YOUR SHOP NAME</span></div>
-        <div class="scene-character">🛒</div>
+        <video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <source src="Demo 4.mp4" type="video/mp4">
+        </video>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">3:00 – 3:40</div>
       </div>
       <div class="slot-info">
@@ -515,11 +494,11 @@
     <!-- Slot 5 — End Card -->
     <div class="slot-card hot" onclick="openModal('slot5')">
       <div class="slot-thumb">
-        <div class="scene-bg" style="background: radial-gradient(#1a1022, #0a0a0f)"></div>
-        <div style="position:absolute; inset: 12px; border: 2px dashed rgba(0,245,212,0.3); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px;">
-          <span style="font-size:0.6rem; font-family:monospace; color:rgba(0,245,212,0.6)">SPONSORED BY</span>
-          <span style="font-size:0.9rem; font-family:monospace; color:rgba(0,245,212,0.9); font-weight:bold">YOUR NAME</span>
-        </div>
+        <video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <source src="Demo 5.mp4" type="video/mp4">
+        </video>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">4:50 – 5:00</div>
         <span class="badge hot">🔥 HOT</span>
       </div>
