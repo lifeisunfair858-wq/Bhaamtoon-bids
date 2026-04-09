@@ -526,7 +526,7 @@
   <div class="contact-links">
     <a class="contact-link" href="https://instagram.com/bhaamtoon_yt" target="_blank">📸 @bhaamtoon_yt</a>
     <a class="contact-link" href="https://youtube.com/@BHAAMTOON" target="_blank">▶️ BHAAMTOON</a>
-    <a class="contact-link" href="/cdn-cgi/l/email-protection#8ae8e2ebebe7fee5e5e4eff2fef8ebf9caede7ebe3e6a4e9e5e7">📧 <span class="__cf_email__" data-cfemail="15777d747478617a7a7b706d61677466557278747c793b767a78">[email&#160;protected]</span></a>
+    <a class="contact-link" id="emailLink">📧 bhaamtoonextras&#64;gmail.com</a>
     <a class="contact-link" href="#">💬 WhatsApp</a>
   </div>
 </div>
@@ -579,7 +579,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // ─── SUPABASE SETUP ───
   const SUPABASE_URL = 'https://uewlbcjfesjklzmdisjj.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
@@ -1013,6 +1013,10 @@
   });
 
   updateCoin();
+
+  // Email link (split to avoid Cloudflare encoding)
+  var el = document.getElementById('emailLink');
+  if(el){ el.href = 'mail' + 'to:' + 'bhaamtoonextras' + String.fromCharCode(64) + 'gmail.com'; }
 
   // ─── INIT ───
   loadAllTopBids();
