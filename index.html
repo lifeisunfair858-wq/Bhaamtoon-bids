@@ -185,7 +185,6 @@
   footer { padding: 24px; text-align: center; font-size: 0.75rem; font-family: 'Space Mono', monospace; color: var(--muted); }
   footer span { color: var(--cyan); }
 
-  /* COIN */
   .coin {
     position: fixed;
     bottom: 24px;
@@ -198,7 +197,6 @@
   }
   .coin svg { width: 100%; height: 100%; }
 
-  /* TIMER */
   .timer-bar {
     background: linear-gradient(90deg, #0d1a10, #0a0a0f, #1a0d0a);
     border-bottom: 1px solid var(--border);
@@ -217,7 +215,6 @@
   .timer-sep { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--border); margin-bottom: 10px; }
   .timer-closed { display: none; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--orange); text-align: center; }
 
-  /* OTP */
   .otp-step { padding: 8px 0 4px; }
   .otp-step .otp-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 4px; }
   .otp-step .otp-title span { color: var(--cyan); }
@@ -526,8 +523,8 @@
   const SLOTS = ['slot1','slot2','slot3','slot4','slot5'];
   const SLOT_NAMES = { slot1:'SCENE 01', slot2:'SCENE 03', slot3:'SCENE 05', slot4:'SCENE 07', slot5:'END CARD' };
   const MAX_OTP = 5, OTP_KEY = 'bt_otp';
+  const DEVICE_ID = localStorage.getItem('bt_device_id') || (() => { const id = btoa(navigator.userAgent + screen.width + Math.random()).slice(0,32); localStorage.setItem('bt_device_id', id); return id; })();
 
-  // ANIMATION
   function animateBidChange(slotId, newValue) {
     const digitEl = document.getElementById('digits-' + slotId);
     const amountEl = document.getElementById('bid-' + slotId);
@@ -556,7 +553,6 @@
   async function loadAll() { for (let s of SLOTS) await loadTopBidForSlot(s); }
   function startAutoRefresh() { if (autoRefresh) clearInterval(autoRefresh); autoRefresh = setInterval(loadAll, 8000); }
 
-  // OTP
   function getOTPCount(email) { const d=JSON.parse(localStorage.getItem(OTP_KEY)||'{}'); const t=new Date().toDateString(); return d.date!==t?{count:0}:{count:d.emails?.[email]||0}; }
   function canRequest(email) { return getOTPCount(email).count < MAX_OTP; }
   function incrementOTP(email) { const d=JSON.parse(localStorage.getItem(OTP_KEY)||'{}'); const t=new Date().toDateString(); let e=d.date===t?(d.emails||{}):{}; e[email]=(e[email]||0)+1; localStorage.setItem(OTP_KEY,JSON.stringify({date:t,emails:e})); return e[email]; }
@@ -585,14 +581,48 @@
     const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
     if (error) { showToast('Wrong!', true); btn.disabled = false; btn.textContent = 'VERIFY →'; return; }
     verifiedEmail = email; sessionStorage.removeItem('bt_otp'); localStorage.removeItem('bt_otp_back');
+    showOTPSuccess(email);
+  }
+
+  function showOTPSuccess(email) {
     document.getElementById('otpStep').style.display = 'none';
     document.getElementById('modalForm').style.display = 'block';
     document.getElementById('verifiedEmail').textContent = email;
     document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[currentSlot];
     updateModalBid(currentSlot); loadLeaderboard(currentSlot);
-    const info = JSON.parse(localStorage.getItem('bt_info')||'null');
-    if (info?.email === email) { document.getElementById('bidName').value = info.name; document.getElementById('bidName').disabled = true; }
-    showToast('✅ Verified!');
+    checkEmailLocked(email);
+    showToast('✅ Email verified!');
+  }
+
+  async function checkEmailLocked(email) {
+    const nameInput = document.getElementById('bidName');
+    const linkInput = document.getElementById('bidLink');
+    const nameHint = document.getElementById('nameHint');
+    const savedInfo = JSON.parse(localStorage.getItem('bt_info')||'null');
+    const { data } = await db.from('bids').select('bidder_name, bid_link').eq('email', email).limit(1);
+    
+    if (data && data.length > 0) {
+      nameInput.value = data[0].bidder_name;
+      linkInput.value = data[0].bid_link || '';
+      nameInput.disabled = true; linkInput.disabled = true;
+      nameHint.textContent = '🔒 Name locked to this email (previous bidder)';
+      nameHint.style.color = 'var(--cyan)';
+      localStorage.setItem('bt_info', JSON.stringify({ name: data[0].bidder_name, link: data[0].bid_link, email }));
+    } else if (savedInfo && savedInfo.email === email) {
+      nameInput.value = savedInfo.name || ''; linkInput.value = savedInfo.link || '';
+      nameInput.disabled = true; linkInput.disabled = true;
+      nameHint.textContent = '🔒 Name locked to your email';
+      nameHint.style.color = 'var(--cyan)';
+    } else {
+      nameInput.value = ''; linkInput.value = '';
+      nameInput.disabled = false; linkInput.disabled = false;
+      nameHint.textContent = 'Name will be locked to your email after first bid';
+      nameHint.style.color = 'var(--muted)';
+    }
+    document.getElementById('bidAmount').value = '';
+    document.getElementById('bidNote').value = '';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'SUBMIT BID →';
   }
 
   function otpInput(el, n) { el.value = el.value.replace(/\D/g,'').slice(-1); if(el.value && n) document.getElementById(n).focus(); if(['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('').length===6) verifyOTP(); }
@@ -603,7 +633,6 @@
     resendTimer = setInterval(() => { sec--; cnt.textContent=sec; if(sec<=0){ clearInterval(resendTimer); btn.className=''; btn.onclick=()=>{ startResend(email); db.auth.signInWithOtp({email,options:{shouldCreateUser:true}}); showToast('📧 Resent!'); }; } }, 1000);
   }
 
-  // MODAL
   function openModal(slotId) {
     currentSlot = slotId;
     document.getElementById('successMsg').style.display = 'none';
@@ -613,7 +642,7 @@
       document.getElementById('otpStep').style.display = 'none';
       document.getElementById('modalForm').style.display = 'block';
       document.getElementById('verifiedEmail').textContent = verifiedEmail;
-      updateModalBid(slotId); loadLeaderboard(slotId);
+      updateModalBid(slotId); loadLeaderboard(slotId); checkEmailLocked(verifiedEmail);
     } else if (saved && saved.slot === slotId) {
       document.getElementById('otpStep').style.display = 'block';
       document.getElementById('emailInputSection').style.display = 'none';
@@ -629,17 +658,23 @@
       document.getElementById('sendOtpBtn').disabled = false;
     }
     document.getElementById('otpSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
-    document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
     document.getElementById('bidModal').classList.add('open');
   }
 
   function updateModalBid(slotId) { const t=topBids[slotId]||0; document.getElementById('modalCurrentBid').textContent=t>0?'₹'+t.toLocaleString('en-IN'):'No bids'; document.getElementById('minBidDisplay').textContent='₹'+t.toLocaleString('en-IN'); }
   function closeModal() { document.getElementById('bidModal').classList.remove('open'); }
+  
   async function loadLeaderboard(slotId) {
     const { data } = await db.from('bids').select('bidder_name,bid_link,bid_amount').eq('slot_id',slotId).order('bid_amount',{ascending:false}).limit(5);
     const lb = document.getElementById('leaderboard');
     if(!data?.length) { lb.innerHTML='<div class="lb-empty">No bids yet!</div>'; return; }
     lb.innerHTML = data.map((b,i)=>`<div class="lb-row"><div><div class="lb-name">${i===0?'👑 ':i+1+'. '}${b.bidder_name}</div>${b.bid_link?`<div style="font-size:0.65rem;color:var(--cyan);">${b.bid_link}</div>`:''}</div><div class="lb-amount">₹${b.bid_amount.toLocaleString('en-IN')}</div></div>`).join('');
+  }
+
+  async function isNameTakenByOtherEmail(name, currentEmail) {
+    const { data } = await db.from('bids').select('email').ilike('bidder_name', name).limit(1);
+    if (!data || data.length === 0) return false;
+    return data[0].email !== currentEmail;
   }
 
   async function submitBid() {
@@ -652,21 +687,32 @@
     if (!verifiedEmail) { showToast('Verify email!', true); return; }
     const top = topBids[currentSlot] || 0;
     if (amount <= top) { showToast(`Bid > ₹${top.toLocaleString('en-IN')}!`, true); return; }
+    
+    const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
+    if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
+      showToast(`❌ Email locked to "${existing[0].bidder_name}"!`, true);
+      document.getElementById('bidName').value = existing[0].bidder_name;
+      return;
+    }
+    
+    if (await isNameTakenByOtherEmail(name, verifiedEmail)) {
+      showToast(`❌ "${name}" is registered with another email!`, true);
+      return;
+    }
+    
     const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'SUBMITTING...';
-    const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: localStorage.getItem('bt_device_id')||'unknown', email: verifiedEmail }]);
+    const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: DEVICE_ID, email: verifiedEmail }]);
     if (error) { showToast('Error!', true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
     localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
-    showToast('🎉 Bid placed!');
+    showToast('🎉 Bid placed! Name locked to your email.');
   }
 
   function showToast(msg, err=false) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
 
-  // REALTIME
   db.channel('bids').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, async (p) => { await loadTopBidForSlot(p.new.slot_id); if(currentSlot===p.new.slot_id){ loadLeaderboard(p.new.slot_id); updateModalBid(p.new.slot_id); } showToast('🔥 New bid!'); }).subscribe();
 
-  // COUNTDOWN
   const DEADLINE = new Date('2026-04-20T23:59:00+05:30').getTime();
   function updateTimer() {
     const diff = DEADLINE - Date.now();
@@ -679,58 +725,27 @@
   }
   updateTimer();
 
-  // COIN PHYSICS + TILT + SCROLL
-  const coin = document.getElementById('coin');
-  const FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
+  const coin = document.getElementById('coin'), FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
   let coinX = 80, coinY = 0, velX = 0, velY = 0, rot = 0, lastY = scrollY, lastT = Date.now();
-  
   function updateCoin() {
-    velY -= GRAVITY;
-    coinX += velX; coinY += velY;
+    velY -= GRAVITY; coinX += velX; coinY += velY;
     if (coinY <= 0) { coinY = 0; velY = -velY * BOUNCE; if (Math.abs(velY) < 0.5) velY = 0; }
     if (coinX < 0) { coinX = 0; velX = Math.abs(velX) * BOUNCE; }
     if (coinX > innerWidth - 52) { coinX = innerWidth - 52; velX = -Math.abs(velX) * BOUNCE; }
     if (coinY <= 0) velX *= FRICTION;
-    rot += velX * 3;
-    coin.style.left = coinX + 'px';
-    coin.style.bottom = (FLOOR + coinY) + 'px';
-    coin.style.transform = `rotate(${rot}deg)`;
-    const speed = Math.abs(velX) + Math.abs(velY);
-    coin.style.filter = `drop-shadow(0 4px ${8 + Math.min(speed*3,30)}px rgba(255,214,10,${0.4 + speed*0.05}))`;
+    rot += velX * 3; coin.style.left = coinX + 'px'; coin.style.bottom = (FLOOR + coinY) + 'px'; coin.style.transform = `rotate(${rot}deg)`;
     requestAnimationFrame(updateCoin);
   }
-
-  // SCROLL INTERACTION
-  window.addEventListener('scroll', () => {
-    const now = Date.now(), dy = scrollY - lastY;
-    velX += (dy / Math.max(now - lastT, 1)) * 16 * 0.4;
-    if (Math.abs(dy) > 2) velY += Math.abs(dy / Math.max(now - lastT, 1)) * 16 * 0.15;
-    lastY = scrollY; lastT = now;
-  }, { passive: true });
-
-  // TILT INTERACTION (Phone orientation)
-  window.addEventListener('deviceorientation', (e) => {
-    if (e.gamma) velX += e.gamma * 0.05; // gamma = left/right tilt
-    if (e.beta) velY += (e.beta - 45) * 0.03; // beta = front/back tilt
-  });
-
-  // CLICK TO TOSS
-  coin.style.pointerEvents = 'auto';
-  coin.style.cursor = 'pointer';
-  coin.addEventListener('click', () => {
-    velX = (Math.random() - 0.5) * 18;
-    velY = 8 + Math.random() * 6;
-  });
-
+  window.addEventListener('scroll', () => { const n=Date.now(), dy=scrollY-lastY; velX+=(dy/Math.max(n-lastT,1))*16*0.4; if(Math.abs(dy)>2) velY+=Math.abs(dy/Math.max(n-lastT,1))*16*0.15; lastY=scrollY; lastT=n; }, {passive:true});
+  window.addEventListener('deviceorientation', (e) => { if(e.gamma) velX+=e.gamma*0.05; if(e.beta) velY+=(e.beta-45)*0.03; });
+  coin.style.pointerEvents='auto'; coin.style.cursor='pointer';
+  coin.addEventListener('click', ()=>{ velX=(Math.random()-0.5)*18; velY=8+Math.random()*6; });
   updateCoin();
 
-  // INIT
-  if (!localStorage.getItem('bt_device_id')) localStorage.setItem('bt_device_id', btoa(navigator.userAgent + screen.width + Math.random()).slice(0,32));
   document.getElementById('emailLink').href = 'mailto:bhaamtoonextras@gmail.com';
-  document.getElementById('bidModal').addEventListener('click', e => { if (e.target === document.getElementById('bidModal')) closeModal(); });
+  document.getElementById('bidModal').addEventListener('click', e => { if(e.target === document.getElementById('bidModal')) closeModal(); });
   
-  loadAll();
-  startAutoRefresh();
+  loadAll(); startAutoRefresh();
 </script>
 </body>
 </html>
