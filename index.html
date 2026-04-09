@@ -46,95 +46,6 @@
   .ticker { display: inline-block; animation: ticker 22s linear infinite; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #000; font-weight: 700; letter-spacing: 2px; }
   @keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
-  /* ─── LIVE BID TICKER ─── */
-  .bid-ticker-wrap {
-    background: linear-gradient(90deg, #0a0a0f, #111118, #0a0a0f);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    padding: 12px 0;
-    margin: 0 0 20px 0;
-  }
-  
-  .bid-ticker {
-    display: flex;
-    gap: 40px;
-    animation: scrollBids 30s linear infinite;
-    white-space: nowrap;
-  }
-  
-  .bid-ticker:hover {
-    animation-play-state: paused;
-  }
-  
-  @keyframes scrollBids {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  
-  .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text);
-    background: rgba(0,245,212,0.05);
-    padding: 6px 18px;
-    border-radius: 30px;
-    border: 1px solid rgba(0,245,212,0.15);
-    transition: all 0.3s;
-  }
-  
-  .ticker-item.highlight {
-    background: rgba(255,214,10,0.08);
-    border-color: rgba(255,214,10,0.3);
-    animation: pulseGlow 2s ease-in-out infinite;
-  }
-  
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px rgba(255,214,10,0.2); }
-    50% { box-shadow: 0 0 15px rgba(255,214,10,0.5); }
-  }
-  
-  .ticker-slot {
-    color: var(--cyan);
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  
-  .ticker-name {
-    font-weight: 600;
-    color: var(--text);
-  }
-  
-  .ticker-amount {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    color: var(--yellow);
-    letter-spacing: 1px;
-  }
-  
-  .ticker-badge {
-    background: var(--orange);
-    color: #000;
-    font-size: 0.55rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  
-  .refresh-indicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    margin-right: 8px;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
   .hero { position: relative; padding: 70px 24px 50px; text-align: center; overflow: hidden; }
   .hero::before { content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse, rgba(0,245,212,0.08) 0%, transparent 70%); pointer-events: none; }
   .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--orange); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
@@ -189,15 +100,69 @@
   .slot-footer { display: flex; justify-content: space-between; align-items: flex-end; }
   .bid-label { font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; }
 
+  /* ─── SLOT MACHINE STYLE BID AMOUNT ─── */
   .bid-amount {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     color: var(--yellow);
     line-height: 1;
-    transition: color 0.4s;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    height: 2.2rem;
+    min-width: 100px;
   }
-  .bid-amount.updated { color: var(--cyan); }
-  .bid-amount span { font-size: 0.9rem; color: var(--muted); }
+  
+  .bid-amount .digit-container {
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .bid-amount .digit {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .bid-amount.rolling .digit {
+    animation: slotRoll 0.5s ease-out;
+  }
+  
+  @keyframes slotRoll {
+    0% { transform: translateY(0); opacity: 1; }
+    20% { transform: translateY(-20px); opacity: 0.3; }
+    80% { transform: translateY(20px); opacity: 0.3; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  .bid-amount.updated {
+    animation: slotGlow 0.8s ease-out;
+  }
+  
+  @keyframes slotGlow {
+    0%, 100% { text-shadow: 0 0 5px var(--yellow); }
+    50% { text-shadow: 0 0 20px var(--cyan), 0 0 30px var(--cyan); color: var(--cyan); }
+  }
+  
+  .bid-amount .rupee {
+    font-size: 1.2rem;
+    margin-right: 2px;
+    color: var(--muted);
+  }
+  
+  .refresh-badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-left: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
 
   .bid-count { font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; }
 
@@ -209,7 +174,6 @@
 
   /* LIVE PULSE */
   .live-dot { display: inline-block; width: 7px; height: 7px; background: var(--cyan); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
 
   /* TOAST */
   .toast {
@@ -288,11 +252,7 @@
     filter: drop-shadow(0 4px 12px rgba(255,214,10,0.5));
     transition: filter 0.2s;
   }
-
-  .coin svg {
-    width: 100%;
-    height: 100%;
-  }
+  .coin svg { width: 100%; height: 100%; }
 
   /* ─── COUNTDOWN TIMER ─── */
   .timer-bar {
@@ -305,7 +265,6 @@
     gap: 16px;
     flex-wrap: wrap;
   }
-
   .timer-label {
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
@@ -313,17 +272,8 @@
     letter-spacing: 2px;
     text-transform: uppercase;
   }
-
-  .timer-units {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .timer-unit {
-    text-align: center;
-  }
-
+  .timer-units { display: flex; gap: 8px; align-items: center; }
+  .timer-unit { text-align: center; }
   .timer-num {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.8rem;
@@ -333,25 +283,21 @@
     display: block;
     transition: color 0.3s;
   }
-
   .timer-num.urgent { color: var(--orange); }
   .timer-num.critical { color: var(--red, #ff1744); animation: blink 0.5s ease-in-out infinite alternate; }
   @keyframes blink { from { opacity: 1; } to { opacity: 0.4; } }
-
   .timer-sub {
     font-family: 'Space Mono', monospace;
     font-size: 0.5rem;
     color: var(--muted);
     letter-spacing: 1px;
   }
-
   .timer-sep {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.6rem;
     color: var(--border);
     margin-bottom: 10px;
   }
-
   .timer-closed {
     display: none;
     font-family: 'Bebas Neue', sans-serif;
@@ -387,19 +333,9 @@
     border-left: 2px solid var(--orange);
   }
 
-  /* Closed state — grey out slot cards */
-  body.bidding-closed .slot-card {
-    opacity: 0.6;
-    pointer-events: none;
-    cursor: not-allowed;
-  }
-  body.bidding-closed .bid-btn {
-    background: var(--border) !important;
-    color: var(--muted) !important;
-  }
-  body.bidding-closed .bid-btn::after {
-    content: ' CLOSED';
-  }
+  body.bidding-closed .slot-card { opacity: 0.6; pointer-events: none; cursor: not-allowed; }
+  body.bidding-closed .bid-btn { background: var(--border) !important; color: var(--muted) !important; }
+  body.bidding-closed .bid-btn::after { content: ' CLOSED'; }
 </style>
 </head>
 <body>
@@ -413,51 +349,19 @@
 <div class="timer-bar" id="timerBar">
   <div class="timer-label">⏳ Bidding closes in</div>
   <div class="timer-units" id="timerUnits">
-    <div class="timer-unit">
-      <span class="timer-num" id="timerDays">00</span>
-      <span class="timer-sub">DAYS</span>
-    </div>
+    <div class="timer-unit"><span class="timer-num" id="timerDays">00</span><span class="timer-sub">DAYS</span></div>
     <div class="timer-sep">:</div>
-    <div class="timer-unit">
-      <span class="timer-num" id="timerHours">00</span>
-      <span class="timer-sub">HOURS</span>
-    </div>
+    <div class="timer-unit"><span class="timer-num" id="timerHours">00</span><span class="timer-sub">HOURS</span></div>
     <div class="timer-sep">:</div>
-    <div class="timer-unit">
-      <span class="timer-num" id="timerMins">00</span>
-      <span class="timer-sub">MINS</span>
-    </div>
+    <div class="timer-unit"><span class="timer-num" id="timerMins">00</span><span class="timer-sub">MINS</span></div>
     <div class="timer-sep">:</div>
-    <div class="timer-unit">
-      <span class="timer-num" id="timerSecs">00</span>
-      <span class="timer-sub">SECS</span>
-    </div>
+    <div class="timer-unit"><span class="timer-num" id="timerSecs">00</span><span class="timer-sub">SECS</span></div>
   </div>
   <div class="timer-closed" id="timerClosed">🔒 BIDDING CLOSED — WINNERS ANNOUNCED SOON!</div>
 </div>
 
-<!-- PROMO TICKER -->
 <div class="ticker-wrap">
-  <span class="ticker">🎬 YOUR BRAND IN OUR ANIMATION &nbsp;&nbsp;&nbsp; 📢 BID FOR A SCENE SLOT &nbsp;&nbsp;&nbsp; 🔥 LIMITED POSITIONS AVAILABLE &nbsp;&nbsp;&nbsp; 💰 WIN THE BID — WIN THE SCENE &nbsp;&nbsp;&nbsp; 🎬 YOUR BRAND IN OUR ANIMATION &nbsp;&nbsp;&nbsp; 📢 BID FOR A SCENE SLOT &nbsp;&nbsp;&nbsp;</span>
-</div>
-
-<!-- LIVE BID TICKER -->
-<div class="bid-ticker-wrap" id="bidTickerWrap">
-  <div style="display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 0 8px 0;">
-    <div style="display: flex; align-items: center;">
-      <span class="refresh-indicator"></span>
-      <span style="font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 2px;">LIVE TOP BIDS</span>
-    </div>
-    <button onclick="loadTickerData(); loadAllTopBids(); showToast('🔄 Refreshed!')" 
-            style="background: none; border: 1px solid var(--border); color: var(--cyan); 
-                   font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 4px 10px; 
-                   border-radius: 20px; cursor: pointer;">
-      ↻ REFRESH
-    </button>
-  </div>
-  <div class="bid-ticker" id="bidTicker">
-    <div style="color: var(--muted); padding: 0 20px;">Loading live bids...</div>
-  </div>
+  <span class="ticker">🎬 YOUR BRAND IN OUR ANIMATION &nbsp;&nbsp;&nbsp; 📢 BID FOR A SCENE SLOT &nbsp;&nbsp;&nbsp; 🔥 LIMITED POSITIONS AVAILABLE &nbsp;&nbsp;&nbsp; 💰 WIN THE BID — WIN THE SCENE &nbsp;&nbsp;&nbsp;</span>
 </div>
 
 <!-- PHYSICS COIN -->
@@ -486,14 +390,8 @@
 
 <section class="hero">
   <div class="hero-eyebrow">// "I don't have a big ego. It's not my fault if I'm awesome."</div>
-  <h1>
-    <div>YOUR BANNER</div>
-    <div class="line2">INSIDE</div>
-    <div class="line3">OUR VIDEO</div>
-  </h1>
-  <p class="hero-desc">
-    We place <strong>banner, logo, or channel name</strong> — your loved ones, your hated ones, anything you can feature — directly inside our animation. Millions of viewers will see your brand as part of the story — not as a skip-able ad.
-  </p>
+  <h1><div>YOUR BANNER</div><div class="line2">INSIDE</div><div class="line3">OUR VIDEO</div></h1>
+  <p class="hero-desc">We place <strong>banner, logo, or channel name</strong> — directly inside our animation. Millions of viewers will see your brand as part of the story — not as a skip-able ad.</p>
   <div class="stats-bar">
     <div class="stat"><div class="stat-num">97K+</div><div class="stat-label">Subscribers</div></div>
     <div class="stat"><div class="stat-num">1M+</div><div class="stat-label">Monthly Views</div></div>
@@ -518,15 +416,14 @@
   <div class="section-sub">// Video 13 — "Indian **** stories" · Remember, Bid wisely...!</div>
 
   <div class="slots-grid" id="slotsGrid">
-
     <!-- Slot 1 -->
     <div class="slot-card hot" onclick="openModal('slot1')">
       <div class="slot-thumb">
-        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play();" onmouseleave="this.pause();" ontouchstart="this.play();" ontouchend="this.pause();" ontouchcancel="this.pause();">
+        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play()" onmouseleave="this.pause()">
           <source src="Demo1.mp4" type="video/mp4">
         </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">0:00 – 0:15</div>
         <span class="badge hot">🔥 HOT</span>
       </div>
@@ -536,8 +433,8 @@
         <div class="slot-desc">Top banner in the very first scene. Every viewer sees this first — max visibility spot.</div>
         <div class="slot-footer">
           <div class="bid-info">
-            <div class="bid-label">TOP BID</div>
-            <div class="bid-amount" id="bid-slot1">₹—</div>
+            <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
+            <div class="bid-amount" id="bid-slot1"><span class="rupee">₹</span><span class="digit" id="digits-slot1">—</span></div>
             <div class="bid-count" id="count-slot1">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -548,11 +445,11 @@
     <!-- Slot 2 -->
     <div class="slot-card" onclick="openModal('slot2')">
       <div class="slot-thumb">
-        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play();" onmouseleave="this.pause();" ontouchstart="this.play();" ontouchend="this.pause();" ontouchcancel="this.pause();">
+        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play()" onmouseleave="this.pause()">
           <source src="Demo 2.mp4" type="video/mp4">
         </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">0:45 – 1:20</div>
         <span class="badge new">NEW</span>
       </div>
@@ -562,8 +459,8 @@
         <div class="slot-desc">Your logo/poster hanging on the office wall. Visible during a 35-second funny scene.</div>
         <div class="slot-footer">
           <div class="bid-info">
-            <div class="bid-label">TOP BID</div>
-            <div class="bid-amount" id="bid-slot2">₹—</div>
+            <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
+            <div class="bid-amount" id="bid-slot2"><span class="rupee">₹</span><span class="digit" id="digits-slot2">—</span></div>
             <div class="bid-count" id="count-slot2">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -574,11 +471,11 @@
     <!-- Slot 3 -->
     <div class="slot-card" onclick="openModal('slot3')">
       <div class="slot-thumb">
-        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play();" onmouseleave="this.pause();" ontouchstart="this.play();" ontouchend="this.pause();" ontouchcancel="this.pause();">
+        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play()" onmouseleave="this.pause()">
           <source src="Demo 3.mp4" type="video/mp4">
         </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">2:10 – 2:30</div>
       </div>
       <div class="slot-info">
@@ -587,8 +484,8 @@
         <div class="slot-desc">Character shows their phone — your app, Instagram page, or website appears on screen.</div>
         <div class="slot-footer">
           <div class="bid-info">
-            <div class="bid-label">TOP BID</div>
-            <div class="bid-amount" id="bid-slot3">₹—</div>
+            <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
+            <div class="bid-amount" id="bid-slot3"><span class="rupee">₹</span><span class="digit" id="digits-slot3">—</span></div>
             <div class="bid-count" id="count-slot3">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -599,11 +496,11 @@
     <!-- Slot 4 -->
     <div class="slot-card" onclick="openModal('slot4')">
       <div class="slot-thumb">
-        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play();" onmouseleave="this.pause();" ontouchstart="this.play();" ontouchend="this.pause();" ontouchcancel="this.pause();">
+        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play()" onmouseleave="this.pause()">
           <source src="Demo 4.mp4" type="video/mp4">
         </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">3:00 – 3:40</div>
       </div>
       <div class="slot-info">
@@ -612,8 +509,8 @@
         <div class="slot-desc">Scene set in a market — your shop name on the signboard. Great for local businesses!</div>
         <div class="slot-footer">
           <div class="bid-info">
-            <div class="bid-label">TOP BID</div>
-            <div class="bid-amount" id="bid-slot4">₹—</div>
+            <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
+            <div class="bid-amount" id="bid-slot4"><span class="rupee">₹</span><span class="digit" id="digits-slot4">—</span></div>
             <div class="bid-count" id="count-slot4">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -621,14 +518,14 @@
       </div>
     </div>
 
-    <!-- Slot 5 — End Card -->
+    <!-- Slot 5 -->
     <div class="slot-card hot" onclick="openModal('slot5')">
       <div class="slot-thumb">
-        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play();" onmouseleave="this.pause();" ontouchstart="this.play();" ontouchend="this.pause();" ontouchcancel="this.pause();">
+        <video loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onloadedmetadata="this.currentTime=this.duration/2;" onmouseenter="this.play()" onmouseleave="this.pause()">
           <source src="Demo 5.mp4" type="video/mp4">
         </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);pointer-events:none;"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);pointer-events:none;white-space:nowrap;">DEMO VIDEO</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,5vw,2rem);letter-spacing:6px;color:rgba(255,255,255,0.18);white-space:nowrap;">DEMO VIDEO</div>
         <div class="scene-label">4:50 – 5:00</div>
         <span class="badge hot">🔥 HOT</span>
       </div>
@@ -638,15 +535,14 @@
         <div class="slot-desc">"Sponsored by [Your Brand]" on the final end card. Everyone who watches till end sees this.</div>
         <div class="slot-footer">
           <div class="bid-info">
-            <div class="bid-label">TOP BID</div>
-            <div class="bid-amount" id="bid-slot5">₹—</div>
+            <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
+            <div class="bid-amount" id="bid-slot5"><span class="rupee">₹</span><span class="digit" id="digits-slot5">—</span></div>
             <div class="bid-count" id="count-slot5">loading...</div>
           </div>
           <button class="bid-btn cyan">BID NOW →</button>
         </div>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -667,24 +563,20 @@
 <div class="modal-overlay" id="bidModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
-
-    <!-- STEP 1: Email OTP -->
     <div id="otpStep">
       <div class="otp-step">
         <div class="modal-scene-tag" id="otpSceneTag">// VERIFY TO BID</div>
         <div class="otp-title">VERIFY YOUR <span>EMAIL</span></div>
         <div class="otp-sub">One email = one identity.<br>We send a 6-digit code to your inbox — free, instant, no spam.</div>
-
         <div id="emailInputSection">
           <label>YOUR EMAIL ADDRESS *</label>
           <input type="email" id="emailInput" placeholder="you@gmail.com" autocomplete="email" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.9rem;outline:none;">
           <div id="otpLimitMsg" class="otp-limit-warning" style="display:none;"></div>
-          <div class="min-bid-note" style="margin-top:8px;">We only use this to prevent fake bids. Not stored publicly.</div>
+          <div class="min-bid-note" style="margin-top:8px;">We only use this to prevent fake bids.</div>
           <button class="modal-submit" id="sendOtpBtn" onclick="sendOTP()" style="margin-top:18px;">SEND CODE →</button>
         </div>
-
         <div id="otpVerifySection" style="display:none;">
-          <div class="min-bid-note" style="margin-top:0;margin-bottom:14px;color:var(--cyan);">📧 Check your inbox — code sent to <span id="sentToEmail"></span></div>
+          <div class="min-bid-note" style="margin-top:0;margin-bottom:14px;color:var(--cyan);">📧 Code sent to <span id="sentToEmail"></span></div>
           <label>ENTER 6-DIGIT CODE</label>
           <div class="otp-boxes">
             <input class="otp-box" id="o1" maxlength="1" type="tel" oninput="otpInput(this,'o2')" onkeydown="otpBack(event,this,'')">
@@ -695,332 +587,150 @@
             <input class="otp-box" id="o6" maxlength="1" type="tel" oninput="otpInput(this,'')"   onkeydown="otpBack(event,this,'o5')">
           </div>
           <button class="modal-submit" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:18px;">VERIFY →</button>
-          <div class="resend-link" id="resendRow">Didn't get it? <span id="resendBtn" class="disabled">Resend in <span id="resendCountdown">30</span>s</span></div>
+          <div class="resend-link">Didn't get it? <span id="resendBtn" class="disabled">Resend in <span id="resendCountdown">30</span>s</span></div>
         </div>
       </div>
     </div>
-
-    <!-- STEP 2: Bid Form -->
     <div id="modalForm" style="display:none;">
       <div class="otp-verified">✅ Email verified — <span id="verifiedEmail"></span></div>
       <div class="modal-scene-tag" id="modalSceneTag">// SCENE 01</div>
       <h2>PLACE YOUR <span>BID</span></h2>
       <div class="modal-current-bid">Current Top Bid: <span id="modalCurrentBid">₹—</span></div>
-
       <label>YOUR NAME / BRAND NAME *</label>
       <input type="text" id="bidName" placeholder="e.g. Raj's Chai Shop" autocomplete="off">
-      <div class="min-bid-note" id="nameHint" style="margin-top:6px;">Your name will be locked to your email after first bid</div>
-
+      <div class="min-bid-note" id="nameHint">Name will be locked to your email after first bid</div>
       <label>INSTAGRAM / YOUTUBE / WEBSITE (optional)</label>
       <input type="text" id="bidLink" placeholder="e.g. instagram.com/myshop" autocomplete="off">
-
       <label>YOUR BID AMOUNT (₹) *</label>
       <input type="number" id="bidAmount" placeholder="Enter amount in ₹" min="1" autocomplete="off">
-      <div class="min-bid-note" id="minBidNote">Bid must be higher than current top bid: <strong id="minBidDisplay">₹0</strong></div>
-
+      <div class="min-bid-note">Bid > <strong id="minBidDisplay">₹0</strong></div>
       <label>WHAT TO SHOW IN SCENE? (optional)</label>
       <textarea id="bidNote" placeholder="e.g. My shop logo + Instagram handle @myshop"></textarea>
-
-      <label>TOP BIDDERS FOR THIS SLOT</label>
-      <div class="leaderboard" id="leaderboard">
-        <div class="lb-empty">No bids yet — be the first!</div>
-      </div>
-
+      <label>TOP BIDDERS</label>
+      <div class="leaderboard" id="leaderboard"><div class="lb-empty">No bids yet — be the first!</div></div>
       <button class="modal-submit" id="submitBtn" onclick="submitBid()">SUBMIT BID →</button>
     </div>
-
     <div class="success-msg" id="successMsg">
       <div class="check">✅</div>
       <h3>BID PLACED!</h3>
-      <p>We'll contact you on WhatsApp or Instagram if you win the slot.<br><br>
-      <strong>Keep an eye on your DMs!</strong><br><br>
-      <span style="color: var(--cyan); font-family: monospace; font-size:0.8rem;">Bidding closes in 5 days.</span></p>
+      <p>We'll contact you if you win!<br><strong>Keep an eye on your DMs!</strong></p>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-  // ─── SUPABASE SETUP ───
+  // ─── SUPABASE ───
   const SUPABASE_URL = 'https://uewlbcjfesjklzmdisjj.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ─── STATE ───
-  let verifiedEmail = null;
-  let resendTimer = null;
-  let tickerRefreshInterval = null;
-  let tickerData = [];
-
-  // ─── OTP RATE LIMITING ───
-  const OTP_LIMIT_KEY = 'bt_otp_requests';
-  const MAX_OTP_PER_DAY = 5;
-
-  function getOTPRequestCount(email) {
-    const data = JSON.parse(localStorage.getItem(OTP_LIMIT_KEY) || '{}');
-    const today = new Date().toDateString();
-    if (data.date !== today) return { count: 0, date: today };
-    return { count: data.emails?.[email] || 0, date: today, emails: data.emails || {} };
-  }
-
-  function incrementOTPCount(email) {
-    const data = JSON.parse(localStorage.getItem(OTP_LIMIT_KEY) || '{}');
-    const today = new Date().toDateString();
-    let emails = data.date === today ? (data.emails || {}) : {};
-    emails[email] = (emails[email] || 0) + 1;
-    localStorage.setItem(OTP_LIMIT_KEY, JSON.stringify({ date: today, emails }));
-    return emails[email];
-  }
-
-  function canRequestOTP(email) {
-    const { count } = getOTPRequestCount(email);
-    return count < MAX_OTP_PER_DAY;
-  }
-
-  function getRemainingOTPRequests(email) {
-    return MAX_OTP_PER_DAY - getOTPRequestCount(email).count;
-  }
-
-  // ─── OTP STATE PERSISTENCE ───
-  function saveOTPState(email, slotId) {
-    const state = { email, slot: slotId, expires: Date.now() + 480000 };
-    sessionStorage.setItem('bt_otp_state', JSON.stringify(state));
-    localStorage.setItem('bt_otp_backup', JSON.stringify(state));
-  }
-
-  function clearOTPState() {
-    sessionStorage.removeItem('bt_otp_state');
-    localStorage.removeItem('bt_otp_backup');
-  }
-
-  function getOTPState() {
-    let stateStr = sessionStorage.getItem('bt_otp_state') || localStorage.getItem('bt_otp_backup');
-    if (!stateStr) return null;
-    try {
-      const state = JSON.parse(stateStr);
-      if (Date.now() > state.expires) { clearOTPState(); return null; }
-      return state;
-    } catch (e) { return null; }
-  }
-
-  // ─── DEVICE FINGERPRINT ───
-  function getDeviceId() {
-    let id = localStorage.getItem('bt_device_id');
-    if (!id) {
-      const raw = navigator.userAgent + navigator.language + screen.width + screen.height + new Date().getTimezoneOffset() + Math.random().toString(36).slice(2);
-      id = btoa(raw).replace(/[^a-zA-Z0-9]/g, '').slice(0, 32);
-      localStorage.setItem('bt_device_id', id);
-    }
-    return id;
-  }
-
-  function getDeviceInfo() {
-    return JSON.parse(localStorage.getItem('bt_info') || 'null');
-  }
-
-  function saveDeviceInfo(name, link, note, email) {
-    localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email }));
-    localStorage.setItem('bt_name', name);
-  }
-
-  const DEVICE_ID = getDeviceId();
+  let verifiedEmail = null, resendTimer = null, currentSlot = null, topBids = {}, autoRefreshInterval = null;
   const SLOTS = ['slot1','slot2','slot3','slot4','slot5'];
-  const SLOT_NAMES = {
-    slot1: 'SCENE 01 — Opening Background Banner',
-    slot2: 'SCENE 03 — Office Wall Poster',
-    slot3: 'SCENE 05 — Phone Screen Cameo',
-    slot4: 'SCENE 07 — Shop Signboard',
-    slot5: 'END CARD — Shoutout'
-  };
+  const SLOT_NAMES = { slot1:'SCENE 01 — Opening Banner', slot2:'SCENE 03 — Office Wall', slot3:'SCENE 05 — Phone Screen', slot4:'SCENE 07 — Shop Sign', slot5:'END CARD — Shoutout' };
+  const MAX_OTP_PER_DAY = 5, OTP_LIMIT_KEY = 'bt_otp_requests';
 
-  let currentSlot = null;
-  let topBids = {};
-
-  // ─── OTP: SEND ───
-  async function sendOTP() {
-    const email = document.getElementById('emailInput').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Enter a valid email address!', true); return; }
-    if (!canRequestOTP(email)) { showToast(`⚠️ You've reached the limit of ${MAX_OTP_PER_DAY} OTP requests today!`, true); return; }
-
-    const btn = document.getElementById('sendOtpBtn');
-    btn.disabled = true;
-    btn.textContent = 'SENDING...';
-
-    const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-
-    if (error) { showToast('Failed: ' + error.message, true); btn.disabled = false; btn.textContent = 'SEND CODE →'; return; }
-
-    const newCount = incrementOTPCount(email);
-    const remaining = MAX_OTP_PER_DAY - newCount;
-    saveOTPState(email, currentSlot);
-
-    document.getElementById('emailInputSection').style.display = 'none';
-    document.getElementById('otpVerifySection').style.display = 'block';
-    document.getElementById('sentToEmail').textContent = email;
-    document.getElementById('o1').focus();
+  // ─── SLOT MACHINE ANIMATION ───
+  function animateBidChange(slotId, newValue) {
+    const digitEl = document.getElementById('digits-' + slotId);
+    const amountEl = document.getElementById('bid-' + slotId);
+    if (!digitEl || !amountEl) return;
     
-    let toastMsg = `📧 Code sent to ${email}!`;
-    if (remaining <= 2) toastMsg += ` (${remaining} left today)`;
-    showToast(toastMsg);
-    startResendCountdown(email);
-  }
-
-  // ─── OTP: VERIFY ───
-  async function verifyOTP() {
-    const email = document.getElementById('emailInput').value.trim();
-    const token = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
-    if (token.length < 6) { showToast('Enter all 6 digits!', true); return; }
-
-    const btn = document.getElementById('verifyOtpBtn');
-    btn.disabled = true;
-    btn.textContent = 'VERIFYING...';
-
-    const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
-    if (error) { showToast('Wrong code!', true); btn.disabled = false; btn.textContent = 'VERIFY →'; return; }
-
-    clearOTPState();
-    verifiedEmail = email;
-    showOTPSuccess(email);
-  }
-
-  function showOTPSuccess(email) {
-    document.getElementById('otpStep').style.display = 'none';
-    document.getElementById('modalForm').style.display = 'block';
-    document.getElementById('verifiedEmail').textContent = email;
-    document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[currentSlot];
-    updateModalBid(currentSlot);
-    loadLeaderboard(currentSlot);
-
-    const savedInfo = getDeviceInfo();
-    const nameInput = document.getElementById('bidName');
-    const linkInput = document.getElementById('bidLink');
-    const nameHint = document.getElementById('nameHint');
-
-    if (savedInfo && savedInfo.email === email) {
-      nameInput.value = savedInfo.name;
-      linkInput.value = savedInfo.link || '';
-      nameInput.disabled = true;
-      linkInput.disabled = true;
-      nameHint.textContent = '🔒 Name locked to your email';
-      nameHint.style.color = 'var(--cyan)';
-    } else {
-      nameInput.value = '';
-      linkInput.value = '';
-      nameInput.disabled = false;
-      linkInput.disabled = false;
-      nameHint.textContent = 'Name will be locked after first bid';
-      nameHint.style.color = 'var(--muted)';
-    }
-
-    document.getElementById('bidAmount').value = '';
-    document.getElementById('bidNote').value = '';
-    document.getElementById('submitBtn').disabled = false;
-    document.getElementById('submitBtn').textContent = 'SUBMIT BID →';
-    showToast('✅ Email verified!');
-  }
-
-  function otpInput(el, nextId) {
-    el.value = el.value.replace(/\D/g,'').slice(-1);
-    if (el.value && nextId) document.getElementById(nextId).focus();
-    if (['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('').length === 6) verifyOTP();
-  }
-  function otpBack(e, el, prevId) {
-    if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
-  }
-
-  function startResendCountdown(email, startSecs = 30) {
-    let secs = startSecs;
-    const countEl = document.getElementById('resendCountdown');
-    const btn = document.getElementById('resendBtn');
-    btn.className = 'disabled';
-    countEl.textContent = secs;
-    if (resendTimer) clearInterval(resendTimer);
-    resendTimer = setInterval(() => {
-      secs--;
-      countEl.textContent = secs;
-      if (secs <= 0) {
-        clearInterval(resendTimer);
-        btn.className = '';
-        btn.onclick = () => { startResendCountdown(email); db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }); showToast('📧 Code resent!'); };
-      }
-    }, 1000);
-  }
-
-  // ─── BID DATA ───
-  async function loadAllTopBids() {
-    for (const slot of SLOTS) await loadTopBidForSlot(slot);
+    amountEl.classList.add('rolling');
+    const formatted = newValue > 0 ? newValue.toLocaleString('en-IN') : '—';
+    digitEl.textContent = formatted;
+    
+    amountEl.classList.add('updated');
+    setTimeout(() => {
+      amountEl.classList.remove('rolling');
+      setTimeout(() => amountEl.classList.remove('updated'), 400);
+    }, 300);
   }
 
   async function loadTopBidForSlot(slotId) {
     const { data } = await db.from('bids').select('bid_amount').eq('slot_id', slotId).order('bid_amount', { ascending: false }).limit(1);
-    const el = document.getElementById('bid-' + slotId);
     const countEl = document.getElementById('count-' + slotId);
-    if (data && data.length > 0) {
-      topBids[slotId] = data[0].bid_amount;
-      if (el) { el.textContent = '₹' + data[0].bid_amount.toLocaleString('en-IN'); el.classList.add('updated'); setTimeout(() => el.classList.remove('updated'), 600); }
+    const oldValue = topBids[slotId] || 0;
+    const newValue = (data && data.length > 0) ? data[0].bid_amount : 0;
+    
+    if (newValue !== oldValue) {
+      topBids[slotId] = newValue;
+      animateBidChange(slotId, newValue);
     } else {
-      topBids[slotId] = 0;
-      if (el) el.textContent = 'No bids yet';
+      topBids[slotId] = newValue;
+      document.getElementById('digits-' + slotId).textContent = newValue > 0 ? newValue.toLocaleString('en-IN') : '—';
     }
+    
     const { count } = await db.from('bids').select('*', { count: 'exact', head: true }).eq('slot_id', slotId);
     if (countEl) countEl.textContent = (count || 0) + ' bid' + (count === 1 ? '' : 's');
   }
 
-  // ─── LIVE TICKER ───
-  async function loadTickerData() {
-    const allBids = [];
-    for (const slot of SLOTS) {
-      const { data } = await db.from('bids').select('bidder_name, bid_amount, slot_id').eq('slot_id', slot).order('bid_amount', { ascending: false }).limit(1);
-      if (data && data.length > 0) allBids.push({ ...data[0], slotName: SLOT_NAMES[slot].split('—')[0].trim() });
+  async function loadAllTopBids() {
+    for (const slot of SLOTS) await loadTopBidForSlot(slot);
+  }
+
+  function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(async () => { await loadAllTopBids(); }, 8000);
+  }
+
+  // ─── OTP FUNCTIONS (condensed) ───
+  function getOTPCount(email) { const d=JSON.parse(localStorage.getItem(OTP_LIMIT_KEY)||'{}'); const t=new Date().toDateString(); return d.date!==t?{count:0}:{count:d.emails?.[email]||0}; }
+  function canRequestOTP(email) { return getOTPCount(email).count < MAX_OTP_PER_DAY; }
+  function incrementOTP(email) { const d=JSON.parse(localStorage.getItem(OTP_LIMIT_KEY)||'{}'); const t=new Date().toDateString(); let e=d.date===t?(d.emails||{}):{}; e[email]=(e[email]||0)+1; localStorage.setItem(OTP_LIMIT_KEY,JSON.stringify({date:t,emails:e})); return e[email]; }
+  function saveOTPState(email,slot) { const s={email,slot,expires:Date.now()+480000}; sessionStorage.setItem('bt_otp',JSON.stringify(s)); localStorage.setItem('bt_otp_backup',JSON.stringify(s)); }
+  function getOTPState() { const s=sessionStorage.getItem('bt_otp')||localStorage.getItem('bt_otp_backup'); if(!s) return null; try{ const p=JSON.parse(s); return Date.now()>p.expires?null:p; }catch(e){return null;} }
+  function clearOTPState() { sessionStorage.removeItem('bt_otp'); localStorage.removeItem('bt_otp_backup'); }
+
+  async function sendOTP() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) { showToast('Valid email required!', true); return; }
+    if (!canRequestOTP(email)) { showToast(`⚠️ Limit of ${MAX_OTP_PER_DAY} requests today!`, true); return; }
+    const btn = document.getElementById('sendOtpBtn'); btn.disabled = true; btn.textContent = 'SENDING...';
+    const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+    if (error) { showToast('Failed: ' + error.message, true); btn.disabled = false; btn.textContent = 'SEND CODE →'; return; }
+    incrementOTP(email); saveOTPState(email, currentSlot);
+    document.getElementById('emailInputSection').style.display = 'none';
+    document.getElementById('otpVerifySection').style.display = 'block';
+    document.getElementById('sentToEmail').textContent = email;
+    document.getElementById('o1').focus();
+    showToast('📧 Code sent!');
+    startResendCountdown(email);
+  }
+
+  async function verifyOTP() {
+    const email = document.getElementById('emailInput').value.trim();
+    const token = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+    if (token.length < 6) { showToast('Enter 6 digits!', true); return; }
+    const btn = document.getElementById('verifyOtpBtn'); btn.disabled = true; btn.textContent = 'VERIFYING...';
+    const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
+    if (error) { showToast('Wrong code!', true); btn.disabled = false; btn.textContent = 'VERIFY →'; return; }
+    clearOTPState(); verifiedEmail = email;
+    document.getElementById('otpStep').style.display = 'none';
+    document.getElementById('modalForm').style.display = 'block';
+    document.getElementById('verifiedEmail').textContent = email;
+    document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[currentSlot];
+    updateModalBid(currentSlot); loadLeaderboard(currentSlot);
+    const info = JSON.parse(localStorage.getItem('bt_info')||'null');
+    if (info?.email === email) {
+      document.getElementById('bidName').value = info.name; document.getElementById('bidName').disabled = true;
+      document.getElementById('bidLink').value = info.link||''; document.getElementById('bidLink').disabled = true;
+      document.getElementById('nameHint').textContent = '🔒 Name locked to email';
     }
-    tickerData = allBids.sort((a, b) => b.bid_amount - a.bid_amount);
-    renderTicker();
+    showToast('✅ Email verified!');
   }
 
-  function renderTicker() {
-    const tickerEl = document.getElementById('bidTicker');
-    if (tickerData.length === 0) {
-      tickerEl.innerHTML = '<div style="color: var(--muted); padding: 0 20px;">No bids yet — Be the first! 🎯</div>';
-      return;
-    }
-    const items = [...tickerData, ...tickerData];
-    tickerEl.innerHTML = items.map((bid, i) => `
-      <div class="ticker-item ${i === 0 ? 'highlight' : ''}">
-        <span class="ticker-slot">${bid.slotName}</span>
-        <span class="ticker-name">${escHtml(bid.bidder_name)}</span>
-        <span class="ticker-amount">₹${bid.bid_amount.toLocaleString('en-IN')}</span>
-        ${i === 0 ? '<span class="ticker-badge">🔥 TOP</span>' : ''}
-      </div>
-    `).join('');
-    tickerEl.style.cursor = 'pointer';
-    tickerEl.title = 'Click to refresh bids';
-  }
-
-  function startTickerAutoRefresh() {
-    if (tickerRefreshInterval) clearInterval(tickerRefreshInterval);
-    tickerRefreshInterval = setInterval(async () => { await loadTickerData(); await loadAllTopBids(); }, 10000);
-  }
-
-  document.getElementById('bidTicker').addEventListener('click', async () => {
-    showToast('🔄 Refreshing...');
-    await loadTickerData();
-    await loadAllTopBids();
-    showToast('✅ Updated!');
-  });
-
-  // ─── REALTIME ───
-  function subscribeRealtime() {
-    db.channel('bids-channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, async (payload) => {
-        await loadTopBidForSlot(payload.new.slot_id);
-        await loadTickerData();
-        if (currentSlot === payload.new.slot_id) { loadLeaderboard(payload.new.slot_id); updateModalBid(payload.new.slot_id); }
-        showToast('🔥 New bid!');
-      })
-      .subscribe();
+  function otpInput(el, next) { el.value = el.value.replace(/\D/g,'').slice(-1); if(el.value && next) document.getElementById(next).focus(); if(['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('').length===6) verifyOTP(); }
+  function otpBack(e, el, prev) { if(e.key==='Backspace' && !el.value && prev) document.getElementById(prev).focus(); }
+  function startResendCountdown(email, secs=30) {
+    const cnt=document.getElementById('resendCountdown'), btn=document.getElementById('resendBtn');
+    btn.className='disabled'; cnt.textContent=secs;
+    if(resendTimer) clearInterval(resendTimer);
+    resendTimer = setInterval(() => { secs--; cnt.textContent=secs;
+      if(secs<=0){ clearInterval(resendTimer); btn.className=''; btn.onclick=()=>{ startResendCountdown(email); db.auth.signInWithOtp({email,options:{shouldCreateUser:true}}); showToast('📧 Code resent!'); }; }
+    }, 1000);
   }
 
   // ─── MODAL ───
@@ -1028,181 +738,110 @@
     currentSlot = slotId;
     document.getElementById('successMsg').style.display = 'none';
     document.getElementById('modalForm').style.display = 'none';
-    const savedState = getOTPState();
-    
+    const saved = getOTPState();
     if (verifiedEmail) {
       document.getElementById('otpStep').style.display = 'none';
-      showOTPSuccess(verifiedEmail);
-    } else if (savedState && savedState.slot === slotId) {
+      document.getElementById('modalForm').style.display = 'block';
+      document.getElementById('verifiedEmail').textContent = verifiedEmail;
+      document.getElementById('modalSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
+      updateModalBid(slotId); loadLeaderboard(slotId);
+    } else if (saved && saved.slot === slotId) {
       document.getElementById('otpStep').style.display = 'block';
       document.getElementById('emailInputSection').style.display = 'none';
       document.getElementById('otpVerifySection').style.display = 'block';
-      document.getElementById('sentToEmail').textContent = savedState.email;
-      document.getElementById('emailInput').value = savedState.email;
-      document.getElementById('otpSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
-      ['o1','o2','o3','o4','o5','o6'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('sentToEmail').textContent = saved.email;
+      document.getElementById('emailInput').value = saved.email;
       document.getElementById('o1').focus();
-      showToast('📧 Resume where you left off');
     } else {
       document.getElementById('otpStep').style.display = 'block';
-      document.getElementById('otpSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
       document.getElementById('emailInputSection').style.display = 'block';
       document.getElementById('otpVerifySection').style.display = 'none';
       document.getElementById('emailInput').value = '';
-      ['o1','o2','o3','o4','o5','o6'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('sendOtpBtn').disabled = false;
       document.getElementById('sendOtpBtn').textContent = 'SEND CODE →';
-      document.getElementById('otpLimitMsg').style.display = 'none';
     }
+    document.getElementById('otpSceneTag').textContent = '// ' + SLOT_NAMES[slotId];
     document.getElementById('bidModal').classList.add('open');
   }
 
-  function updateModalBid(slotId) {
-    const top = topBids[slotId] || 0;
-    document.getElementById('modalCurrentBid').textContent = top > 0 ? '₹' + top.toLocaleString('en-IN') : 'No bids yet';
-    document.getElementById('minBidDisplay').textContent = '₹' + top.toLocaleString('en-IN');
-  }
-
-  function closeModal() { document.getElementById('bidModal').classList.remove('open'); currentSlot = null; }
-
+  function updateModalBid(slotId) { const top=topBids[slotId]||0; document.getElementById('modalCurrentBid').textContent=top>0?'₹'+top.toLocaleString('en-IN'):'No bids yet'; document.getElementById('minBidDisplay').textContent='₹'+top.toLocaleString('en-IN'); }
+  function closeModal() { document.getElementById('bidModal').classList.remove('open'); }
   async function loadLeaderboard(slotId) {
-    const { data } = await db.from('bids').select('bidder_name, bid_link, bid_amount').eq('slot_id', slotId).order('bid_amount', { ascending: false }).limit(5);
+    const { data } = await db.from('bids').select('bidder_name,bid_link,bid_amount').eq('slot_id',slotId).order('bid_amount',{ascending:false}).limit(5);
     const lb = document.getElementById('leaderboard');
-    if (!data || data.length === 0) { lb.innerHTML = '<div class="lb-empty">No bids yet — be the first! 🎯</div>'; return; }
-    lb.innerHTML = data.map((b, i) => `
-      <div class="lb-row"><div><div class="lb-name">${i === 0 ? '<span class="lb-crown">👑</span>' : (i+1) + '. '}${escHtml(b.bidder_name)}</div>${b.bid_link ? `<div class="lb-link">${escHtml(b.bid_link)}</div>` : ''}</div><div class="lb-amount">₹${b.bid_amount.toLocaleString('en-IN')}</div></div>
-    `).join('');
+    if(!data?.length) { lb.innerHTML='<div class="lb-empty">No bids yet!</div>'; return; }
+    lb.innerHTML = data.map((b,i)=>`<div class="lb-row"><div><div class="lb-name">${i===0?'👑 ':i+1+'. '}${b.bidder_name}</div>${b.bid_link?`<div class="lb-link">${b.bid_link}</div>`:''}</div><div class="lb-amount">₹${b.bid_amount.toLocaleString('en-IN')}</div></div>`).join('');
   }
 
   // ─── SUBMIT BID ───
-  const BAD_WORDS = ['fuck','shit','bitch','asshole','bastard','dick','pussy','cock','cunt','whore','slut','nigger','faggot','retard','madarchod','bhenchod','chutiya','gaandu','randi','harami','kamina','mc','bc','loda','lavda','bhosdi','gandu'];
-  function containsBadWord(text) { return BAD_WORDS.some(w => text.toLowerCase().replace(/\s+/g,'').includes(w)); }
-  async function isNameTaken(name) {
-    const { data } = await db.from('bids').select('device_id').ilike('bidder_name', name).limit(1);
-    return data && data.length > 0 && data[0].device_id !== DEVICE_ID;
-  }
-
   async function submitBid() {
     const name = document.getElementById('bidName').value.trim();
     const link = document.getElementById('bidLink').value.trim();
     const amount = parseInt(document.getElementById('bidAmount').value);
     const note = document.getElementById('bidNote').value.trim();
-
-    if (!name) { showToast('Enter your name!', true); return; }
-    if (!amount || amount <= 0) { showToast('Enter valid amount!', true); return; }
-    if (!verifiedEmail) { showToast('Verify email first!', true); return; }
-    if (containsBadWord(name)) { showToast('⚠️ Clean name please!', true); return; }
-    if (note && containsBadWord(note)) { showToast('⚠️ Clean message please!', true); return; }
-
-    const topBid = topBids[currentSlot] || 0;
-    if (amount <= topBid) { showToast(`Bid > ₹${topBid.toLocaleString('en-IN')}!`, true); return; }
-
-    const savedInfo = getDeviceInfo();
-    if (savedInfo && savedInfo.email === verifiedEmail && name !== savedInfo.name) {
-      showToast(`Locked to "${savedInfo.name}"!`, true);
-      document.getElementById('bidName').value = savedInfo.name;
-      return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = 'CHECKING...';
-
-    if (!savedInfo || savedInfo.email !== verifiedEmail) {
-      if (await isNameTaken(name)) { showToast(`❌ "${name}" taken!`, true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
-    }
-
-    btn.textContent = 'SUBMITTING...';
-    const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link || null, bid_amount: amount, bid_note: note || null, device_id: DEVICE_ID, email: verifiedEmail }]);
-
-    if (error) { showToast('Error! Try again.', true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
-
-    saveDeviceInfo(name, link, note, verifiedEmail);
+    if (!name) { showToast('Enter name!', true); return; }
+    if (!amount || amount <= 0) { showToast('Valid amount!', true); return; }
+    if (!verifiedEmail) { showToast('Verify email!', true); return; }
+    const top = topBids[currentSlot] || 0;
+    if (amount <= top) { showToast(`Bid > ₹${top.toLocaleString('en-IN')}!`, true); return; }
+    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'SUBMITTING...';
+    const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: localStorage.getItem('bt_device_id')||'unknown', email: verifiedEmail }]);
+    if (error) { showToast('Error!', true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
+    localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
     showToast('🎉 Bid placed!');
   }
 
-  // ─── TOAST ───
-  function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (isError ? ' error' : '');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
+  function showToast(msg, err=false) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
+
+  // ─── REALTIME ───
+  function subscribeRealtime() {
+    db.channel('bids-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, async (p) => {
+      await loadTopBidForSlot(p.new.slot_id);
+      if (currentSlot === p.new.slot_id) { loadLeaderboard(p.new.slot_id); updateModalBid(p.new.slot_id); }
+      showToast('🔥 New bid!');
+    }).subscribe();
   }
-
-  function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  document.getElementById('bidModal').addEventListener('click', e => { if (e.target === document.getElementById('bidModal')) closeModal(); });
 
   // ─── COUNTDOWN ───
   const DEADLINE = new Date('2026-04-20T23:59:00+05:30').getTime();
   function updateTimer() {
     const diff = DEADLINE - Date.now();
-    if (diff <= 0) {
-      document.getElementById('timerUnits').style.display = 'none';
-      document.getElementById('timerClosed').style.display = 'block';
-      document.querySelector('.timer-label').style.display = 'none';
-      document.body.classList.add('bidding-closed');
-      return;
-    }
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-    document.getElementById('timerDays').textContent = String(days).padStart(2,'0');
-    document.getElementById('timerHours').textContent = String(hours).padStart(2,'0');
-    document.getElementById('timerMins').textContent = String(mins).padStart(2,'0');
-    document.getElementById('timerSecs').textContent = String(secs).padStart(2,'0');
+    if (diff <= 0) { document.getElementById('timerUnits').style.display='none'; document.getElementById('timerClosed').style.display='block'; document.body.classList.add('bidding-closed'); return; }
+    document.getElementById('timerDays').textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
+    document.getElementById('timerHours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+    document.getElementById('timerMins').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    document.getElementById('timerSecs').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
     setTimeout(updateTimer, 1000);
   }
   updateTimer();
 
-  // ─── PHYSICS COIN ───
-  const coin = document.getElementById('coin');
-  const FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
-  let coinX = 80, coinY = 0, velX = 0, velY = 0, rotation = 0, lastScrollY = window.scrollY, lastScrollTime = Date.now();
-  const screenW = () => window.innerWidth, coinW = 52;
-
+  // ─── COIN PHYSICS ───
+  const coin=document.getElementById('coin'); let coinX=80, coinY=0, velX=0, velY=0, rot=0, lastY=scrollY, lastT=Date.now();
   function updateCoin() {
-    velY -= GRAVITY;
-    coinX += velX;
-    coinY += velY;
-    if (coinY <= 0) { coinY = 0; velY = -velY * BOUNCE; if (Math.abs(velY) < 0.5) velY = 0; }
-    if (coinX < 0) { coinX = 0; velX = Math.abs(velX) * BOUNCE; }
-    if (coinX > screenW() - coinW) { coinX = screenW() - coinW; velX = -Math.abs(velX) * BOUNCE; }
-    if (coinY <= 0) velX *= FRICTION;
-    rotation += velX * 3;
-    coin.style.left = coinX + 'px';
-    coin.style.bottom = (FLOOR + coinY) + 'px';
-    coin.style.transform = `rotate(${rotation}deg)`;
+    velY-=0.6; coinX+=velX; coinY+=velY;
+    if(coinY<=0){ coinY=0; velY=-velY*0.4; if(Math.abs(velY)<0.5) velY=0; }
+    if(coinX<0){ coinX=0; velX=Math.abs(velX)*0.4; } if(coinX>innerWidth-52){ coinX=innerWidth-52; velX=-Math.abs(velX)*0.4; }
+    if(coinY<=0) velX*=0.88;
+    rot+=velX*3; coin.style.left=coinX+'px'; coin.style.bottom=(24+coinY)+'px'; coin.style.transform=`rotate(${rot}deg)`;
     requestAnimationFrame(updateCoin);
   }
-
-  window.addEventListener('scroll', () => {
-    const now = Date.now(), dy = window.scrollY - lastScrollY;
-    velX += (dy / Math.max(now - lastScrollTime, 1)) * 16 * 0.4;
-    if (Math.abs(dy) > 2) velY += Math.abs(dy / Math.max(now - lastScrollTime, 1)) * 16 * 0.15;
-    lastScrollY = window.scrollY;
-    lastScrollTime = now;
-  }, { passive: true });
-
-  coin.style.pointerEvents = 'auto';
-  coin.style.cursor = 'pointer';
-  coin.addEventListener('click', () => { velX = (Math.random() - 0.5) * 18; velY = 8 + Math.random() * 6; });
+  addEventListener('scroll',()=>{ const n=Date.now(), dy=scrollY-lastY; velX+=(dy/Math.max(n-lastT,1))*16*0.4; if(Math.abs(dy)>2) velY+=Math.abs(dy/Math.max(n-lastT,1))*16*0.15; lastY=scrollY; lastT=n; },{passive:true});
+  coin.style.pointerEvents='auto'; coin.style.cursor='pointer';
+  coin.onclick=()=>{ velX=(Math.random()-0.5)*18; velY=8+Math.random()*6; };
   updateCoin();
 
   document.getElementById('emailLink').href = 'mailto:bhaamtoonextras@gmail.com';
+  document.getElementById('bidModal').addEventListener('click', e => { if(e.target === document.getElementById('bidModal')) closeModal(); });
+
+  // ─── DEVICE ID ───
+  if(!localStorage.getItem('bt_device_id')) localStorage.setItem('bt_device_id', btoa(navigator.userAgent+screen.width+Math.random()).slice(0,32));
 
   // ─── INIT ───
-  async function init() {
-    await loadAllTopBids();
-    await loadTickerData();
-    startTickerAutoRefresh();
-    subscribeRealtime();
-  }
-  init();
+  loadAllTopBids();
+  startAutoRefresh();
+  subscribeRealtime();
 </script>
 </body>
 </html>
