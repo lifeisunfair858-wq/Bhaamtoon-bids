@@ -84,7 +84,7 @@
   }
   .logout-btn:hover { border-color: var(--orange); color: var(--orange); }
 
-  .main { padding: 28px 24px; max-width: 1200px; margin: 0 auto; }
+  .main { padding: 28px 24px; max-width: 1400px; margin: 0 auto; }
 
   /* SUMMARY CARDS */
   .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
@@ -100,13 +100,14 @@
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; margin-bottom: 16px; }
   .section-title span { color: var(--cyan); }
 
-  .winners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .winners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 40px; }
   .winner-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; position: relative; overflow: hidden; }
   .winner-card.has-winner { border-color: rgba(0,230,118,0.3); }
   .winner-card.no-bids { border-color: rgba(107,107,133,0.3); opacity: 0.6; }
   .winner-slot { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--cyan); letter-spacing: 2px; margin-bottom: 6px; }
   .winner-scene { font-weight: 800; font-size: 0.9rem; margin-bottom: 14px; }
   .winner-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--green); line-height: 1; margin-bottom: 4px; }
+  .winner-email { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 4px; word-break: break-all; }
   .winner-link { font-size: 0.75rem; color: var(--cyan); font-family: 'Space Mono', monospace; margin-bottom: 8px; word-break: break-all; }
   .winner-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--yellow); }
   .winner-note { font-size: 0.75rem; color: var(--muted); margin-top: 6px; font-style: italic; }
@@ -124,24 +125,24 @@
   .action-btn.export { background: var(--cyan); color: #000; }
   .action-btn.export-winners { background: var(--green); color: #000; }
   .action-btn.refresh { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-  .action-btn.clear-all { background: var(--red); color: #fff; }
 
   /* ALL BIDS TABLE */
   .table-wrap { overflow-x: auto; margin-bottom: 40px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 1000px; }
   thead tr { background: var(--card); border-bottom: 2px solid var(--border); }
-  th { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; padding: 12px 14px; text-align: left; white-space: nowrap; }
+  th { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; padding: 12px 10px; text-align: left; white-space: nowrap; }
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
   tbody tr:hover { background: rgba(255,255,255,0.02); }
   tbody tr.top-bid { background: rgba(0,230,118,0.04); }
-  td { padding: 12px 14px; vertical-align: middle; }
-  .td-slot { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--cyan); }
+  td { padding: 10px; vertical-align: middle; }
+  .td-slot { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--cyan); }
   .td-name { font-weight: 700; }
-  .td-link { color: var(--cyan); font-size: 0.75rem; word-break: break-all; }
-  .td-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--yellow); }
+  .td-email { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; max-width: 180px; word-break: break-all; }
+  .td-link { color: var(--cyan); font-size: 0.7rem; word-break: break-all; max-width: 150px; }
+  .td-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--yellow); }
   .td-amount.top { color: var(--green); }
-  .td-note { color: var(--muted); font-size: 0.75rem; max-width: 180px; }
-  .td-time { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+  .td-note { color: var(--muted); font-size: 0.7rem; max-width: 150px; }
+  .td-time { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); white-space: nowrap; }
   .crown-badge { background: var(--green); color: #000; font-size: 0.55rem; font-family: 'Space Mono', monospace; padding: 2px 6px; border-radius: 2px; margin-left: 6px; letter-spacing: 1px; }
 
   .empty-table { text-align: center; padding: 40px; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.8rem; }
@@ -226,246 +227,4 @@
         <option value="slot5">End Card</option>
       </select>
       <select id="filterSort" onchange="renderTable()">
-        <option value="time_desc">Newest First</option>
-        <option value="amount_desc">Highest Bid First</option>
-        <option value="amount_asc">Lowest Bid First</option>
-      </select>
-      <input type="text" id="filterSearch" placeholder="Search name..." oninput="renderTable()">
-      <span class="total-count" id="totalCount"></span>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>SLOT</th>
-            <th>NAME / BRAND</th>
-            <th>INSTAGRAM / LINK</th>
-            <th>BID AMOUNT</th>
-            <th>WHAT TO SHOW</th>
-            <th>TIME</th>
-          </tr>
-        </thead>
-        <tbody id="bidsTableBody">
-          <tr><td colspan="6" class="empty-table">Loading bids...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-  // ─── PASSWORD ───
-  const ADMIN_PASSWORD = 'bhaamtoon2026'; // Change this to your own password!
-
-  function login() {
-    const pw = document.getElementById('passwordInput').value;
-    if (pw === ADMIN_PASSWORD) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
-      initDashboard();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-    }
-  }
-
-  function logout() {
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('passwordInput').value = '';
-  }
-
-  // ─── SUPABASE ───
-  const SUPABASE_URL = 'https://uewlbcjfesjklzmdisjj.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
-  const { createClient } = supabase;
-  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const SLOT_NAMES = {
-    slot1: 'Scene 01 — Opening Banner',
-    slot2: 'Scene 03 — Office Wall',
-    slot3: 'Scene 05 — Phone Screen',
-    slot4: 'Scene 07 — Shop Sign',
-    slot5: 'End Card Shoutout'
-  };
-
-  let allBids = [];
-  let topBidPerSlot = {};
-
-  async function initDashboard() {
-    await loadData();
-    subscribeRealtime();
-  }
-
-  async function loadData() {
-    const { data, error } = await db
-      .from('bids')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) { showToast('Error loading bids!', true); return; }
-
-    allBids = data || [];
-    computeTopBids();
-    renderSummary();
-    renderWinners();
-    renderTable();
-    showToast('✅ Data refreshed!');
-  }
-
-  function computeTopBids() {
-    topBidPerSlot = {};
-    for (const bid of allBids) {
-      if (!topBidPerSlot[bid.slot_id] || bid.bid_amount > topBidPerSlot[bid.slot_id].bid_amount) {
-        topBidPerSlot[bid.slot_id] = bid;
-      }
-    }
-  }
-
-  // ─── SUMMARY ───
-  function renderSummary() {
-    const total = allBids.length;
-    const slots = Object.keys(topBidPerSlot).length;
-    const topBid = allBids.reduce((max, b) => b.bid_amount > max ? b.bid_amount : max, 0);
-    const totalRevenue = Object.values(topBidPerSlot).reduce((sum, b) => sum + b.bid_amount, 0);
-
-    document.getElementById('sumTotal').textContent = total;
-    document.getElementById('sumSlots').textContent = slots + '/5';
-    document.getElementById('sumTopBid').textContent = topBid > 0 ? '₹' + topBid.toLocaleString('en-IN') : '—';
-    document.getElementById('sumRevenue').textContent = totalRevenue > 0 ? '₹' + totalRevenue.toLocaleString('en-IN') : '—';
-  }
-
-  // ─── WINNERS ───
-  function renderWinners() {
-    const grid = document.getElementById('winnersGrid');
-    grid.innerHTML = Object.entries(SLOT_NAMES).map(([slotId, name]) => {
-      const winner = topBidPerSlot[slotId];
-      if (winner) {
-        return `
-          <div class="winner-card has-winner">
-            <span class="winner-crown">👑</span>
-            <div class="winner-slot">${slotId.toUpperCase()}</div>
-            <div class="winner-scene">${name}</div>
-            <div class="winner-name">${escHtml(winner.bidder_name)}</div>
-            ${winner.bid_link ? `<div class="winner-link">🔗 ${escHtml(winner.bid_link)}</div>` : ''}
-            <div class="winner-amount">₹${winner.bid_amount.toLocaleString('en-IN')}</div>
-            ${winner.bid_note ? `<div class="winner-note">"${escHtml(winner.bid_note)}"</div>` : ''}
-          </div>`;
-      } else {
-        return `
-          <div class="winner-card no-bids">
-            <div class="winner-slot">${slotId.toUpperCase()}</div>
-            <div class="winner-scene">${name}</div>
-            <div class="no-winner-text">No bids yet</div>
-          </div>`;
-      }
-    }).join('');
-  }
-
-  // ─── TABLE ───
-  function renderTable() {
-    const slotFilter = document.getElementById('filterSlot').value;
-    const sortFilter = document.getElementById('filterSort').value;
-    const search = document.getElementById('filterSearch').value.toLowerCase();
-
-    let filtered = allBids.filter(b => {
-      if (slotFilter !== 'all' && b.slot_id !== slotFilter) return false;
-      if (search && !b.bidder_name.toLowerCase().includes(search)) return false;
-      return true;
-    });
-
-    if (sortFilter === 'amount_desc') filtered.sort((a,b) => b.bid_amount - a.bid_amount);
-    else if (sortFilter === 'amount_asc') filtered.sort((a,b) => a.bid_amount - b.bid_amount);
-
-    document.getElementById('totalCount').textContent = filtered.length + ' bids';
-
-    const tbody = document.getElementById('bidsTableBody');
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-table">No bids found</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = filtered.map(b => {
-      const isTop = topBidPerSlot[b.slot_id]?.id === b.id;
-      const time = new Date(b.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-      return `
-        <tr class="${isTop ? 'top-bid' : ''}">
-          <td class="td-slot">${SLOT_NAMES[b.slot_id] || b.slot_id}</td>
-          <td class="td-name">${escHtml(b.bidder_name)}${isTop ? '<span class="crown-badge">👑 WINNER</span>' : ''}</td>
-          <td class="td-link">${b.bid_link ? escHtml(b.bid_link) : '<span style="color:var(--muted)">—</span>'}</td>
-          <td class="td-amount ${isTop ? 'top' : ''}">₹${b.bid_amount.toLocaleString('en-IN')}</td>
-          <td class="td-note">${b.bid_note ? escHtml(b.bid_note) : '<span style="color:var(--muted)">—</span>'}</td>
-          <td class="td-time">${time}</td>
-        </tr>`;
-    }).join('');
-  }
-
-  // ─── EXPORT CSV ───
-  function exportAllCSV() {
-    const rows = [['Slot', 'Name', 'Instagram/Link', 'Bid Amount (₹)', 'What to Show', 'Time', 'Winner?']];
-    for (const b of allBids) {
-      const isTop = topBidPerSlot[b.slot_id]?.id === b.id;
-      rows.push([
-        SLOT_NAMES[b.slot_id] || b.slot_id,
-        b.bidder_name,
-        b.bid_link || '',
-        b.bid_amount,
-        b.bid_note || '',
-        new Date(b.created_at).toLocaleString('en-IN'),
-        isTop ? 'YES' : ''
-      ]);
-    }
-    downloadCSV(rows, 'bhaamtoon-all-bids.csv');
-    showToast('📥 CSV downloaded!');
-  }
-
-  function exportWinnersCSV() {
-    const rows = [['Slot', 'Winner Name', 'Instagram/Link', 'Winning Bid (₹)', 'What to Show']];
-    for (const [slotId, b] of Object.entries(topBidPerSlot)) {
-      rows.push([
-        SLOT_NAMES[slotId] || slotId,
-        b.bidder_name,
-        b.bid_link || '',
-        b.bid_amount,
-        b.bid_note || ''
-      ]);
-    }
-    downloadCSV(rows, 'bhaamtoon-winners.csv');
-    showToast('🏆 Winners CSV downloaded!');
-  }
-
-  function downloadCSV(rows, filename) {
-    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-  }
-
-  // ─── REALTIME ───
-  function subscribeRealtime() {
-    db.channel('admin-channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, () => {
-        loadData();
-      })
-      .subscribe();
-  }
-
-  function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (isError ? ' error' : '');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-</script>
-</body>
-</html>
+        <option value="time
