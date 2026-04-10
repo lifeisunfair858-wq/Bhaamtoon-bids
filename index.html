@@ -96,29 +96,72 @@
 
   .bidder-name-top { font-size: 0.75rem; color: var(--cyan); font-family: 'Space Mono', monospace; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
 
+  /* ODOMETER / ROLLING NUMBERS EFFECT */
   .bid-amount {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.8rem;
     color: var(--yellow);
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+  }
+  
+  .bid-amount .digit-container {
+    display: inline-flex;
+    position: relative;
+    height: 2.2rem;
+  }
+  
+  .bid-amount .digit-column {
     display: inline-block;
+    position: relative;
+    overflow: hidden;
+    height: 2.2rem;
+    min-width: 0.9rem;
   }
   
-  .bid-amount.rolling .digit { animation: slotRoll 0.4s ease-out; }
-  @keyframes slotRoll {
-    0% { transform: translateY(0); opacity: 1; }
-    20% { transform: translateY(-15px); opacity: 0.3; }
-    80% { transform: translateY(15px); opacity: 0.3; }
-    100% { transform: translateY(0); opacity: 1; }
+  .bid-amount .digit-reel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.15, 1.2);
   }
   
-  .bid-amount.updated { animation: slotGlow 0.8s ease-out; }
-  @keyframes slotGlow {
+  .bid-amount .digit {
+    display: block;
+    text-align: center;
+    line-height: 2.2rem;
+    height: 2.2rem;
+  }
+  
+  .bid-amount.rolling .digit-reel {
+    animation: odometerRoll 0.5s ease-out;
+  }
+  
+  @keyframes odometerRoll {
+    0% { transform: translateY(0); }
+    20% { transform: translateY(-100%); opacity: 0.8; }
+    80% { transform: translateY(-900%); opacity: 0.8; }
+    100% { transform: translateY(-1000%); }
+  }
+  
+  .bid-amount.updated {
+    animation: odometerGlow 0.8s ease-out;
+  }
+  
+  @keyframes odometerGlow {
     0%, 100% { text-shadow: 0 0 5px var(--yellow); }
-    50% { text-shadow: 0 0 20px var(--cyan), 0 0 30px var(--cyan); color: var(--cyan); }
+    50% { text-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan); color: var(--cyan); }
   }
   
-  .bid-amount .rupee { font-size: 1.2rem; margin-right: 2px; color: var(--muted); }
+  .bid-amount .rupee {
+    font-size: 1.2rem;
+    margin-right: 4px;
+    color: var(--muted);
+  }
   
   .refresh-badge {
     display: inline-block;
@@ -200,7 +243,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .coin.dragging { filter: drop-shadow(0 8px 20px rgba(255,214,10,0.8)); transform: scale(1.1); cursor: grabbing; }
-  .coin svg { width: 100%; height: 100%; pointer-events: none; }
+  .coin img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
   .timer-bar {
     background: linear-gradient(90deg, #0d1a10, #0a0a0f, #1a0d0a);
@@ -229,7 +272,17 @@
   .resend-link { font-size: 0.7rem; color: var(--muted); margin-top: 10px; }
   .resend-link span { color: var(--cyan); text-decoration: underline; cursor: pointer; }
   .resend-link span.disabled { color: var(--muted); text-decoration: none; cursor: default; }
-  .otp-limit-warning { font-size: 0.65rem; color: var(--orange); margin-top: 8px; padding: 6px 10px; background: rgba(255,107,43,0.1); border-radius: 4px; border-left: 2px solid var(--orange); }
+  
+  .otp-limit-warning {
+    font-size: 0.65rem;
+    color: var(--orange);
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: rgba(255,107,43,0.1);
+    border-radius: 4px;
+    border-left: 2px solid var(--orange);
+    font-family: 'Space Mono', monospace;
+  }
 
   body.bidding-closed .slot-card { opacity: 0.6; pointer-events: none; }
   body.bidding-closed .bid-btn { background: var(--border) !important; color: var(--muted) !important; }
@@ -286,21 +339,7 @@
 </div>
 
 <div class="coin" id="coin">
-  <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="coinGrad" cx="35%" cy="30%" r="65%">
-        <stop offset="0%" stop-color="#fff7a0"/>
-        <stop offset="40%" stop-color="#ffd60a"/>
-        <stop offset="100%" stop-color="#b8860b"/>
-      </radialGradient>
-    </defs>
-    <circle cx="26" cy="26" r="25" fill="#b8860b"/>
-    <circle cx="26" cy="26" r="22" fill="url(#coinGrad)"/>
-    <circle cx="26" cy="26" r="18" fill="none" stroke="#b8860b" stroke-width="1.5" opacity="0.5"/>
-    <text x="26" y="21" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="10" fill="#7a5c00" letter-spacing="1">BHAAM</text>
-    <text x="26" y="33" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="14" fill="#7a5c00" letter-spacing="2">₹</text>
-    <ellipse cx="19" cy="18" rx="5" ry="3" fill="white" opacity="0.35" transform="rotate(-30 19 18)"/>
-  </svg>
+  <img src="coin.jpg" alt="BHAAMTOON Coin">
 </div>
 
 <section class="hero">
@@ -351,7 +390,7 @@
           <div class="bid-info">
             <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
             <div class="bidder-name-top" id="name-slot1">—</div>
-            <div class="bid-amount" id="bid-slot1"><span class="rupee">₹</span><span class="digit" id="digits-slot1">—</span></div>
+            <div class="bid-amount" id="bid-slot1"><span class="rupee">₹</span><span class="digit">—</span></div>
             <div class="bid-count" id="count-slot1">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -378,7 +417,7 @@
           <div class="bid-info">
             <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
             <div class="bidder-name-top" id="name-slot2">—</div>
-            <div class="bid-amount" id="bid-slot2"><span class="rupee">₹</span><span class="digit" id="digits-slot2">—</span></div>
+            <div class="bid-amount" id="bid-slot2"><span class="rupee">₹</span><span class="digit">—</span></div>
             <div class="bid-count" id="count-slot2">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -404,7 +443,7 @@
           <div class="bid-info">
             <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
             <div class="bidder-name-top" id="name-slot3">—</div>
-            <div class="bid-amount" id="bid-slot3"><span class="rupee">₹</span><span class="digit" id="digits-slot3">—</span></div>
+            <div class="bid-amount" id="bid-slot3"><span class="rupee">₹</span><span class="digit">—</span></div>
             <div class="bid-count" id="count-slot3">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -430,7 +469,7 @@
           <div class="bid-info">
             <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
             <div class="bidder-name-top" id="name-slot4">—</div>
-            <div class="bid-amount" id="bid-slot4"><span class="rupee">₹</span><span class="digit" id="digits-slot4">—</span></div>
+            <div class="bid-amount" id="bid-slot4"><span class="rupee">₹</span><span class="digit">—</span></div>
             <div class="bid-count" id="count-slot4">loading...</div>
           </div>
           <button class="bid-btn">BID NOW →</button>
@@ -457,7 +496,7 @@
           <div class="bid-info">
             <div class="bid-label">TOP BID <span class="refresh-badge"></span></div>
             <div class="bidder-name-top" id="name-slot5">—</div>
-            <div class="bid-amount" id="bid-slot5"><span class="rupee">₹</span><span class="digit" id="digits-slot5">—</span></div>
+            <div class="bid-amount" id="bid-slot5"><span class="rupee">₹</span><span class="digit">—</span></div>
             <div class="bid-count" id="count-slot5">loading...</div>
           </div>
           <button class="bid-btn cyan">BID NOW →</button>
@@ -475,7 +514,7 @@
     <a class="contact-link" href="https://instagram.com/bhaamtoon_yt" target="_blank">📸 @bhaamtoon_yt</a>
     <a class="contact-link" href="https://youtube.com/@BHAAMTOON" target="_blank">▶️ BHAAMTOON</a>
     <a class="contact-link" id="emailLink">📧 bhaamtoonextras&#64;gmail.com</a>
-    <a class="contact-link" href="https://wa.me/91XXXXXXXXXX" target="_blank">💬 WhatsApp</a>
+    <a class="contact-link" href="https://wa.me/919876543210" target="_blank">💬 WhatsApp</a>
   </div>
 </div>
 
@@ -575,14 +614,32 @@
   const MAX_OTP = 5, OTP_KEY = 'bt_otp';
   const DEVICE_ID = localStorage.getItem('bt_device_id') || (() => { const id = btoa(navigator.userAgent + screen.width + Math.random()).slice(0,32); localStorage.setItem('bt_device_id', id); return id; })();
 
-  function animateBidChange(slotId, newValue) {
-    const digitEl = document.getElementById('digits-' + slotId);
+  function createOdometerHTML(value) {
+    if (value <= 0) return '<span class="digit">—</span>';
+    const digits = value.toLocaleString('en-IN').split('');
+    return digits.map(d => {
+      if (d === ',') return '<span class="digit">,</span>';
+      if (isNaN(d)) return `<span class="digit">${d}</span>`;
+      const num = parseInt(d);
+      const reelDigits = [];
+      for (let i = 0; i < 10; i++) reelDigits.push((num + i) % 10);
+      return `<span class="digit-column"><span class="digit-reel" data-value="${num}">${reelDigits.map(n => `<span class="digit">${n}</span>`).join('')}</span></span>`;
+    }).join('');
+  }
+
+  function animateBidChange(slotId, oldValue, newValue) {
     const amountEl = document.getElementById('bid-' + slotId);
-    if (!digitEl || !amountEl) return;
-    amountEl.classList.add('rolling');
-    digitEl.textContent = newValue > 0 ? newValue.toLocaleString('en-IN') : '—';
-    amountEl.classList.add('updated');
-    setTimeout(() => { amountEl.classList.remove('rolling'); setTimeout(() => amountEl.classList.remove('updated'), 400); }, 300);
+    if (!amountEl) return;
+    const rupeeSpan = '<span class="rupee">₹</span>';
+    const newHTML = rupeeSpan + createOdometerHTML(newValue);
+    if (oldValue !== newValue && newValue > 0) {
+      amountEl.classList.add('rolling');
+      amountEl.innerHTML = newHTML;
+      amountEl.classList.add('updated');
+      setTimeout(() => { amountEl.classList.remove('rolling'); setTimeout(() => amountEl.classList.remove('updated'), 400); }, 400);
+    } else {
+      amountEl.innerHTML = newValue > 0 ? rupeeSpan + createOdometerHTML(newValue) : rupeeSpan + '<span class="digit">—</span>';
+    }
   }
 
   async function loadTopBidForSlot(slotId) {
@@ -592,8 +649,8 @@
     const newVal = (data && data.length) ? data[0].bid_amount : 0;
     const winner = (data && data.length) ? data[0].bidder_name : null;
     if (nameEl) { nameEl.textContent = winner ? '👑 ' + winner : 'No bids yet'; nameEl.style.color = winner ? 'var(--cyan)' : 'var(--muted)'; }
-    if (newVal !== oldVal) { topBids[slotId] = newVal; animateBidChange(slotId, newVal); }
-    else { topBids[slotId] = newVal; document.getElementById('digits-' + slotId).textContent = newVal > 0 ? newVal.toLocaleString('en-IN') : '—'; }
+    if (newVal !== oldVal) { topBids[slotId] = newVal; animateBidChange(slotId, oldVal, newVal); }
+    else { topBids[slotId] = newVal; document.getElementById('bid-' + slotId).innerHTML = newVal > 0 ? '<span class="rupee">₹</span>' + createOdometerHTML(newVal) : '<span class="rupee">₹</span><span class="digit">—</span>'; }
     const { count } = await db.from('bids').select('*', { count: 'exact', head: true }).eq('slot_id', slotId);
     const cntEl = document.getElementById('count-' + slotId); if (cntEl) cntEl.textContent = (count||0) + ' bid' + (count===1?'':'s');
   }
@@ -883,7 +940,7 @@
   }
   updateTimer();
 
-  // COIN PHYSICS - NO CEILING, FREE MOVEMENT
+  // COIN PHYSICS
   const coin = document.getElementById('coin');
   const FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
   let coinX = 80, coinY = 0, velX = 0, velY = 0, rot = 0, lastY = scrollY, lastT = Date.now();
