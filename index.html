@@ -232,6 +232,35 @@
 
   body.bidding-closed .slot-card { opacity: 0.6; pointer-events: none; }
   body.bidding-closed .bid-btn { background: var(--border) !important; color: var(--muted) !important; }
+
+  /* ── WINNING BADGE ── */
+  .winning-badge { display:none; align-items:center; gap:6px; font-size:0.75rem; font-family:'Space Mono',monospace; color:#000; background:var(--yellow); padding:7px 14px; border-radius:6px; margin-bottom:14px; font-weight:700; animation: winPulse 1.5s ease-in-out infinite; }
+  .winning-badge.show { display:flex; }
+  @keyframes winPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,214,10,0.4);} 50%{box-shadow:0 0 0 8px rgba(255,214,10,0);} }
+
+  /* ── CONFIRM STEP ── */
+  .confirm-box { background:rgba(0,245,212,0.06); border:1px solid rgba(0,245,212,0.25); border-radius:10px; padding:20px; margin-top:20px; }
+  .confirm-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:2px; margin-bottom:14px; }
+  .confirm-title span { color:var(--cyan); }
+  .confirm-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
+  .confirm-row:last-child { border-bottom:none; }
+  .confirm-row .clabel { color:var(--muted); font-family:'Space Mono',monospace; font-size:0.7rem; }
+  .confirm-row .cvalue { font-weight:700; color:var(--text); }
+  .confirm-amount-big { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--yellow); }
+  .confirm-btns { display:flex; gap:10px; margin-top:18px; }
+  .confirm-btns button { flex:1; padding:13px; border:none; border-radius:6px; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:2px; cursor:pointer; transition:background 0.2s; }
+  .btn-back { background:var(--border); color:var(--muted); }
+  .btn-back:hover { background:#2a2a3a; color:var(--text); }
+  .btn-confirm { background:var(--cyan); color:#000; }
+  .btn-confirm:hover { background:var(--yellow); }
+  .btn-confirm:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
+
+  /* ── SHARE BUTTON ── */
+  .share-btn { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:11px 22px; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:6px; font-family:'Space Mono',monospace; font-size:0.75rem; cursor:pointer; transition:border-color 0.2s,color 0.2s; width:100%; justify-content:center; }
+  .share-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+
+  /* ── CONFETTI CANVAS ── */
+  #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:9999; display:none; }
 </style>
 </head>
 <body>
@@ -449,7 +478,7 @@
     <a class="contact-link" href="https://instagram.com/bhaamtoon_yt" target="_blank">📸 @bhaamtoon_yt</a>
     <a class="contact-link" href="https://youtube.com/@BHAAMTOON" target="_blank">▶️ BHAAMTOON</a>
     <a class="contact-link" id="emailLink">📧 bhaamtoonextras&#64;gmail.com</a>
-    <a class="contact-link" href="#">💬 WhatsApp</a>
+    <a class="contact-link" href="https://wa.me/91XXXXXXXXXX" target="_blank">💬 WhatsApp</a>
   </div>
 </div>
 
@@ -475,12 +504,12 @@
           <div class="min-bid-note" style="color:var(--cyan);">📧 Code sent to <span id="sentToEmail"></span></div>
           <label>ENTER 6-DIGIT CODE</label>
           <div class="otp-boxes">
-            <input class="otp-box" id="o1" maxlength="1" type="tel" oninput="otpInput(this,'o2')" onkeydown="otpBack(event,this,'')">
-            <input class="otp-box" id="o2" maxlength="1" type="tel" oninput="otpInput(this,'o3')" onkeydown="otpBack(event,this,'o1')">
-            <input class="otp-box" id="o3" maxlength="1" type="tel" oninput="otpInput(this,'o4')" onkeydown="otpBack(event,this,'o2')">
-            <input class="otp-box" id="o4" maxlength="1" type="tel" oninput="otpInput(this,'o5')" onkeydown="otpBack(event,this,'o3')">
-            <input class="otp-box" id="o5" maxlength="1" type="tel" oninput="otpInput(this,'o6')" onkeydown="otpBack(event,this,'o4')">
-            <input class="otp-box" id="o6" maxlength="1" type="tel" oninput="otpInput(this,'')"   onkeydown="otpBack(event,this,'o5')">
+            <input class="otp-box" id="o1" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'o2')" onkeydown="otpBack(event,this,'')">
+            <input class="otp-box" id="o2" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+            <input class="otp-box" id="o3" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+            <input class="otp-box" id="o4" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+            <input class="otp-box" id="o5" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+            <input class="otp-box" id="o6" maxlength="1" type="tel" inputmode="numeric" oninput="otpInput(this,'')"   onkeydown="otpBack(event,this,'o5')">
           </div>
           <button class="modal-submit" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:18px;">VERIFY →</button>
           <div class="resend-link">Didn't get it? <span id="resendBtn" class="disabled">Resend in <span id="resendCountdown">30</span>s</span></div>
@@ -489,6 +518,7 @@
     </div>
     <div id="modalForm" style="display:none;">
       <div class="otp-verified">✅ Email verified — <span id="verifiedEmail"></span></div>
+      <div class="winning-badge" id="winningBadge">🏆 YOU'RE CURRENTLY WINNING THIS SLOT!</div>
       <div class="modal-scene-tag" id="modalSceneTag">// SCENE 01</div>
       <h2>PLACE YOUR <span>BID</span></h2>
       <div class="modal-current-bid">Current Top Bid: <span id="modalCurrentBid">₹—</span></div>
@@ -499,20 +529,40 @@
       <input type="text" id="bidLink" placeholder="e.g. instagram.com/myshop">
       <label>YOUR BID AMOUNT (₹) *</label>
       <input type="number" id="bidAmount" placeholder="Enter amount" min="1">
-      <div class="min-bid-note">Bid > <strong id="minBidDisplay">₹0</strong></div>
+      <div class="min-bid-note">Min bid: current top + <strong>₹50</strong> · Must beat: <strong id="minBidDisplay">₹0</strong></div>
       <label>WHAT TO SHOW? (optional)</label>
       <textarea id="bidNote" placeholder="e.g. My shop logo + @myshop"></textarea>
       <label>TOP BIDDERS</label>
       <div class="leaderboard" id="leaderboard"><div class="lb-empty">No bids yet!</div></div>
-      <button class="modal-submit" id="submitBtn" onclick="submitBid()">SUBMIT BID →</button>
+      <button class="modal-submit" id="submitBtn" onclick="showConfirm()">REVIEW BID →</button>
     </div>
+
+    <!-- CONFIRM STEP -->
+    <div id="confirmStep" style="display:none;">
+      <div class="confirm-box">
+        <div class="confirm-title">CONFIRM YOUR <span>BID</span></div>
+        <div class="confirm-row"><span class="clabel">SLOT</span><span class="cvalue" id="confirmSlot">—</span></div>
+        <div class="confirm-row"><span class="clabel">NAME</span><span class="cvalue" id="confirmName">—</span></div>
+        <div class="confirm-row"><span class="clabel">YOUR BID</span><span class="confirm-amount-big" id="confirmAmount">₹—</span></div>
+        <div class="confirm-row"><span class="clabel">NOTE</span><span class="cvalue" id="confirmNote" style="font-size:0.75rem;max-width:60%;text-align:right;">—</span></div>
+      </div>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;font-family:'Space Mono',monospace;">⚠️ Bids are final and cannot be undone. Only submit if you intend to pay if you win.</p>
+      <div class="confirm-btns">
+        <button class="btn-back" onclick="backToForm()">← EDIT</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="submitBid()">✅ CONFIRM BID</button>
+      </div>
+    </div>
+
     <div class="success-msg" id="successMsg">
-      <div style="font-size:3rem;">✅</div>
+      <div style="font-size:3rem;">🎉</div>
       <h3>BID PLACED!</h3>
       <p>We'll contact you if you win!<br><strong>Keep an eye on your DMs!</strong></p>
+      <button class="share-btn" onclick="shareBid()">📤 SHARE MY BID</button>
     </div>
   </div>
 </div>
+
+<canvas id="confettiCanvas"></canvas>
 
 <div class="toast" id="toast"></div>
 
@@ -661,20 +711,121 @@
     document.getElementById('bidModal').classList.add('open');
   }
 
-  function updateModalBid(slotId) { const t=topBids[slotId]||0; document.getElementById('modalCurrentBid').textContent=t>0?'₹'+t.toLocaleString('en-IN'):'No bids'; document.getElementById('minBidDisplay').textContent='₹'+t.toLocaleString('en-IN'); }
-  function closeModal() { document.getElementById('bidModal').classList.remove('open'); }
+  function updateModalBid(slotId) {
+    const t = topBids[slotId] || 0;
+    document.getElementById('modalCurrentBid').textContent = t > 0 ? '₹' + t.toLocaleString('en-IN') : 'No bids';
+    document.getElementById('minBidDisplay').textContent = '₹' + (t + 50).toLocaleString('en-IN');
+    // Check if verified user is currently winning
+    checkWinning(slotId);
+  }
+
+  async function checkWinning(slotId) {
+    if (!verifiedEmail) return;
+    const badge = document.getElementById('winningBadge');
+    if (!badge) return;
+    const { data } = await db.from('bids').select('email').eq('slot_id', slotId).order('bid_amount', { ascending: false }).limit(1);
+    if (data && data.length > 0 && data[0].email === verifiedEmail) {
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  }
+  function closeModal() {
+    document.getElementById('bidModal').classList.remove('open');
+    document.getElementById('confirmStep').style.display = 'none';
+  }
   
   async function loadLeaderboard(slotId) {
     const { data } = await db.from('bids').select('bidder_name,bid_link,bid_amount').eq('slot_id',slotId).order('bid_amount',{ascending:false}).limit(5);
     const lb = document.getElementById('leaderboard');
     if(!data?.length) { lb.innerHTML='<div class="lb-empty">No bids yet!</div>'; return; }
-    lb.innerHTML = data.map((b,i)=>`<div class="lb-row"><div><div class="lb-name">${i===0?'👑 ':i+1+'. '}${b.bidder_name}</div>${b.bid_link?`<div style="font-size:0.65rem;color:var(--cyan);">${b.bid_link}</div>`:''}</div><div class="lb-amount">₹${b.bid_amount.toLocaleString('en-IN')}</div></div>`).join('');
+    lb.innerHTML = data.map((b,i)=>`<div class="lb-row"><div><div class="lb-name">${i===0?'👑 ':i+1+'. '}${escHtml(b.bidder_name)}</div>${b.bid_link?`<div style="font-size:0.65rem;color:var(--cyan);">${escHtml(b.bid_link)}</div>`:''}</div><div class="lb-amount">₹${b.bid_amount.toLocaleString('en-IN')}</div></div>`).join('');
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   async function isNameTakenByOtherEmail(name, currentEmail) {
     const { data } = await db.from('bids').select('email').ilike('bidder_name', name).limit(1);
     if (!data || data.length === 0) return false;
     return data[0].email !== currentEmail;
+  }
+
+  function showConfirm() {
+    const name = document.getElementById('bidName').value.trim();
+    const amount = parseInt(document.getElementById('bidAmount').value);
+    const note = document.getElementById('bidNote').value.trim();
+    const top = topBids[currentSlot] || 0;
+
+    if (!name) { showToast('Enter your name!', true); return; }
+    if (!amount || amount <= 0) { showToast('Enter a valid amount!', true); return; }
+    if (!verifiedEmail) { showToast('Verify your email first!', true); return; }
+    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top + 50).toLocaleString('en-IN')}!`, true); return; }
+
+    // Populate confirm step
+    document.getElementById('confirmSlot').textContent = SLOT_NAMES[currentSlot];
+    document.getElementById('confirmName').textContent = name;
+    document.getElementById('confirmAmount').textContent = '₹' + amount.toLocaleString('en-IN');
+    document.getElementById('confirmNote').textContent = note || '—';
+
+    document.getElementById('modalForm').style.display = 'none';
+    document.getElementById('confirmStep').style.display = 'block';
+  }
+
+  function backToForm() {
+    document.getElementById('confirmStep').style.display = 'none';
+    document.getElementById('modalForm').style.display = 'block';
+  }
+
+  function shareBid() {
+    const name = document.getElementById('bidName').value.trim() || localStorage.getItem('bt_name') || 'Someone';
+    const amount = document.getElementById('confirmAmount')?.textContent || '';
+    const text = `🎬 I just placed a bid on BHAAMTOON's scene auction! ${amount} for ${SLOT_NAMES[currentSlot] || 'a scene slot'}. Check it out 👇\n${window.location.href}`;
+    if (navigator.share) {
+      navigator.share({ title: 'BHAAMTOON Bid', text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => showToast('📋 Copied to clipboard!')).catch(() => showToast('Share: ' + window.location.href));
+    }
+  }
+
+  // ── CONFETTI ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    canvas.style.display = 'block';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length: 120}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      w: 8 + Math.random() * 8,
+      h: 5 + Math.random() * 5,
+      color: ['#00f5d4','#ff6b2b','#ffd60a','#00e676','#fff'][Math.floor(Math.random()*5)],
+      vy: 2 + Math.random() * 4,
+      vx: (Math.random() - 0.5) * 3,
+      angle: Math.random() * 360,
+      spin: (Math.random() - 0.5) * 6
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      pieces.forEach(p => {
+        p.y += p.vy; p.x += p.vx; p.angle += p.spin;
+        if (p.y < canvas.height + 20) alive = true;
+        ctx.save();
+        ctx.translate(p.x + p.w/2, p.y + p.h/2);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      });
+      if (alive) frame = requestAnimationFrame(draw);
+      else { canvas.style.display = 'none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { cancelAnimationFrame(frame); canvas.style.display = 'none'; }, 4000);
   }
 
   async function submitBid() {
@@ -686,7 +837,7 @@
     if (!amount || amount<=0) { showToast('Valid amount!', true); return; }
     if (!verifiedEmail) { showToast('Verify email!', true); return; }
     const top = topBids[currentSlot] || 0;
-    if (amount <= top) { showToast(`Bid > ₹${top.toLocaleString('en-IN')}!`, true); return; }
+    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}!`, true); return; }
     const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
     if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
       showToast(`❌ Email locked to "${existing[0].bidder_name}"!`, true);
@@ -694,12 +845,21 @@
       return;
     }
     if (await isNameTakenByOtherEmail(name, verifiedEmail)) { showToast(`❌ "${name}" is registered with another email!`, true); return; }
-    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'SUBMITTING...';
+    const confirmBtn = document.getElementById('confirmBtn');
+    if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'SUBMITTING...'; }
+    const btn = document.getElementById('submitBtn'); if(btn){ btn.disabled = true; btn.textContent = 'SUBMITTING...'; }
     const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: DEVICE_ID, email: verifiedEmail }]);
-    if (error) { showToast('Error!', true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
+    if (error) {
+      showToast('Error! Try again.', true);
+      if(confirmBtn){ confirmBtn.disabled=false; confirmBtn.textContent='✅ CONFIRM BID'; }
+      if(btn){ btn.disabled=false; btn.textContent='REVIEW BID →'; }
+      return;
+    }
     localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
+    document.getElementById('confirmStep').style.display = 'none';
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
+    launchConfetti();
     showToast('🎉 Bid placed! Name locked to your email.');
   }
 
