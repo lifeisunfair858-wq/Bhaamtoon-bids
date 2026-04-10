@@ -344,7 +344,7 @@
 </div>
 
 <div class="coin" id="coin">
-  <img src="Coin.jpg" alt="BHAAMTOON Coin">
+  <img src="coin.jpg" alt="BHAAMTOON Coin">
 </div>
 
 <section class="hero">
@@ -666,7 +666,7 @@
   function getOTPCount(email) { const d=JSON.parse(localStorage.getItem(OTP_KEY)||'{}'); const t=new Date().toDateString(); return d.date!==t?{count:0}:{count:d.emails?.[email]||0}; }
   function canRequest(email) { return getOTPCount(email).count < MAX_OTP; }
   function incrementOTP(email) { const d=JSON.parse(localStorage.getItem(OTP_KEY)||'{}'); const t=new Date().toDateString(); let e=d.date===t?(d.emails||{}):{}; e[email]=(e[email]||0)+1; localStorage.setItem(OTP_KEY,JSON.stringify({date:t,emails:e})); return e[email]; }
-  function saveOTPState(email,slot) { const s={email,slot,exp:Date.now()+480000}; sessionStorage.setItem('bt_otp',JSON.stringify(s)); localStorage.setItem('bt_otp_back',JSON.stringify(s)); }
+  function saveOTPState(email,slot) { const s={email,slot,exp:Date.now()+1800000}; sessionStorage.setItem('bt_otp',JSON.stringify(s)); localStorage.setItem('bt_otp_back',JSON.stringify(s)); }
   function getOTPState() { const s=sessionStorage.getItem('bt_otp')||localStorage.getItem('bt_otp_back'); if(!s) return null; try{ const p=JSON.parse(s); return Date.now()>p.exp?null:p; }catch(e){return null;} }
 
   async function sendOTP() {
@@ -899,34 +899,60 @@
     const link = document.getElementById('bidLink').value.trim();
     const amount = parseInt(document.getElementById('bidAmount').value);
     const note = document.getElementById('bidNote').value.trim();
+    
     if (!name) { showToast('Please enter your name', true); return; }
     if (!amount || amount<=0) { showToast('Please enter a valid amount', true); return; }
     if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
+    
     const top = topBids[currentSlot] || 0;
     if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}`, true); return; }
+    
     const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
     if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
       showToast(`❌ Email locked to "${existing[0].bidder_name}"`, true);
       document.getElementById('bidName').value = existing[0].bidder_name;
       return;
     }
-    if (await isNameTakenByOtherEmail(name, verifiedEmail)) { showToast(`❌ "${name}" is registered with another email`, true); return; }
-    const confirmBtn = document.getElementById('confirmBtn');
-    if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'SUBMITTING...'; }
-    const btn = document.getElementById('submitBtn'); if(btn){ btn.disabled = true; btn.textContent = 'SUBMITTING...'; }
-    const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: DEVICE_ID, email: verifiedEmail }]);
-    if (error) {
-      showToast('Error! Try again.', true);
-      if(confirmBtn){ confirmBtn.disabled=false; confirmBtn.textContent='✅ CONFIRM BID'; }
-      if(btn){ btn.disabled=false; btn.textContent='REVIEW BID →'; }
-      return;
+    
+    if (await isNameTakenByOtherEmail(name, verifiedEmail)) { 
+      showToast(`❌ "${name}" is registered with another email`, true); 
+      return; 
     }
-    localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
-    document.getElementById('confirmStep').style.display = 'none';
-    document.getElementById('modalForm').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'block';
-    launchConfetti();
-    showToast('🎉 Bid placed! Name locked to your email.');
+    
+    const confirmBtn = document.getElementById('confirmBtn');
+    const btn = document.getElementById('submitBtn');
+    
+    if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'SUBMITTING...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'SUBMITTING...'; }
+    
+    try {
+      const { error } = await db.from('bids').insert([{ 
+        slot_id: currentSlot, 
+        bidder_name: name, 
+        bid_link: link||null, 
+        bid_amount: amount, 
+        bid_note: note||null, 
+        device_id: DEVICE_ID, 
+        email: verifiedEmail 
+      }]);
+      
+      if (error) throw error;
+      
+      localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
+      document.getElementById('confirmStep').style.display = 'none';
+      document.getElementById('modalForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+      launchConfetti();
+      showToast('🎉 Bid placed! Name locked to your email.');
+      
+    } catch (error) {
+      console.error('Bid error:', error);
+      showToast('Error! Please try again.', true);
+    } finally {
+      // ALWAYS re-enable buttons
+      if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '✅ CONFIRM BID'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'REVIEW BID →'; }
+    }
   }
 
   function showToast(msg, err=false) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
