@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>BHAAMTOON — Sponsor a Scene</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -192,10 +192,14 @@
     width: 52px;
     height: 52px;
     z-index: 999;
-    pointer-events: none;
     filter: drop-shadow(0 4px 12px rgba(255,214,10,0.5));
+    transition: filter 0.2s, transform 0.1s;
+    touch-action: none;
+    cursor: grab;
+    -webkit-tap-highlight-color: transparent;
   }
-  .coin svg { width: 100%; height: 100%; }
+  .coin.dragging { filter: drop-shadow(0 8px 20px rgba(255,214,10,0.8)); transform: scale(1.1); cursor: grabbing; }
+  .coin svg { width: 100%; height: 100%; pointer-events: none; }
 
   .timer-bar {
     background: linear-gradient(90deg, #0d1a10, #0a0a0f, #1a0d0a);
@@ -541,11 +545,9 @@
     const oldVal = topBids[slotId] || 0;
     const newVal = (data && data.length) ? data[0].bid_amount : 0;
     const winner = (data && data.length) ? data[0].bidder_name : null;
-    
     if (nameEl) { nameEl.textContent = winner ? '👑 ' + winner : 'No bids yet'; nameEl.style.color = winner ? 'var(--cyan)' : 'var(--muted)'; }
     if (newVal !== oldVal) { topBids[slotId] = newVal; animateBidChange(slotId, newVal); }
     else { topBids[slotId] = newVal; document.getElementById('digits-' + slotId).textContent = newVal > 0 ? newVal.toLocaleString('en-IN') : '—'; }
-    
     const { count } = await db.from('bids').select('*', { count: 'exact', head: true }).eq('slot_id', slotId);
     const cntEl = document.getElementById('count-' + slotId); if (cntEl) cntEl.textContent = (count||0) + ' bid' + (count===1?'':'s');
   }
@@ -600,10 +602,8 @@
     const nameHint = document.getElementById('nameHint');
     const savedInfo = JSON.parse(localStorage.getItem('bt_info')||'null');
     const { data } = await db.from('bids').select('bidder_name, bid_link').eq('email', email).limit(1);
-    
     if (data && data.length > 0) {
-      nameInput.value = data[0].bidder_name;
-      linkInput.value = data[0].bid_link || '';
+      nameInput.value = data[0].bidder_name; linkInput.value = data[0].bid_link || '';
       nameInput.disabled = true; linkInput.disabled = true;
       nameHint.textContent = '🔒 Name locked to this email (previous bidder)';
       nameHint.style.color = 'var(--cyan)';
@@ -687,19 +687,13 @@
     if (!verifiedEmail) { showToast('Verify email!', true); return; }
     const top = topBids[currentSlot] || 0;
     if (amount <= top) { showToast(`Bid > ₹${top.toLocaleString('en-IN')}!`, true); return; }
-    
     const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
     if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
       showToast(`❌ Email locked to "${existing[0].bidder_name}"!`, true);
       document.getElementById('bidName').value = existing[0].bidder_name;
       return;
     }
-    
-    if (await isNameTakenByOtherEmail(name, verifiedEmail)) {
-      showToast(`❌ "${name}" is registered with another email!`, true);
-      return;
-    }
-    
+    if (await isNameTakenByOtherEmail(name, verifiedEmail)) { showToast(`❌ "${name}" is registered with another email!`, true); return; }
     const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'SUBMITTING...';
     const { error } = await db.from('bids').insert([{ slot_id: currentSlot, bidder_name: name, bid_link: link||null, bid_amount: amount, bid_note: note||null, device_id: DEVICE_ID, email: verifiedEmail }]);
     if (error) { showToast('Error!', true); btn.disabled = false; btn.textContent = 'SUBMIT BID →'; return; }
@@ -725,26 +719,107 @@
   }
   updateTimer();
 
-  const coin = document.getElementById('coin'), FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
+  // COIN PHYSICS - FULLY WORKING
+  const coin = document.getElementById('coin');
+  const FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
   let coinX = 80, coinY = 0, velX = 0, velY = 0, rot = 0, lastY = scrollY, lastT = Date.now();
+  let isDragging = false, dragTargetX = 80, dragTargetY = 0, dragStartTime = 0, wasDragged = false;
+  let dragStartCoinX = 0, dragStartCoinY = 0, dragStartX = 0, dragStartY = 0;
+  const DRAG_SMOOTHING = 0.12;
+
   function updateCoin() {
-    velY -= GRAVITY; coinX += velX; coinY += velY;
-    if (coinY <= 0) { coinY = 0; velY = -velY * BOUNCE; if (Math.abs(velY) < 0.5) velY = 0; }
-    if (coinX < 0) { coinX = 0; velX = Math.abs(velX) * BOUNCE; }
-    if (coinX > innerWidth - 52) { coinX = innerWidth - 52; velX = -Math.abs(velX) * BOUNCE; }
-    if (coinY <= 0) velX *= FRICTION;
-    rot += velX * 3; coin.style.left = coinX + 'px'; coin.style.bottom = (FLOOR + coinY) + 'px'; coin.style.transform = `rotate(${rot}deg)`;
+    if (isDragging) {
+      coinX += (dragTargetX - coinX) * DRAG_SMOOTHING;
+      coinY += (dragTargetY - coinY) * DRAG_SMOOTHING;
+      rot += (dragTargetX - coinX) * 0.3;
+    } else {
+      velY -= GRAVITY;
+      coinX += velX; coinY += velY;
+      if (coinY <= 0) { coinY = 0; velY = -velY * BOUNCE; if (Math.abs(velY) < 0.5) velY = 0; }
+      if (coinX < 0) { coinX = 0; velX = Math.abs(velX) * BOUNCE; }
+      if (coinX > innerWidth - 52) { coinX = innerWidth - 52; velX = -Math.abs(velX) * BOUNCE; }
+      if (coinY <= 0) velX *= FRICTION;
+      rot += velX * 3;
+    }
+    coin.style.left = coinX + 'px';
+    coin.style.bottom = (FLOOR + coinY) + 'px';
+    coin.style.transform = `rotate(${rot}deg)`;
+    const speed = Math.abs(velX) + Math.abs(velY);
+    coin.style.filter = `drop-shadow(0 4px ${8 + Math.min(speed*3,30)}px rgba(255,214,10,${0.4 + speed*0.05}))`;
     requestAnimationFrame(updateCoin);
   }
-  window.addEventListener('scroll', () => { const n=Date.now(), dy=scrollY-lastY; velX+=(dy/Math.max(n-lastT,1))*16*0.4; if(Math.abs(dy)>2) velY+=Math.abs(dy/Math.max(n-lastT,1))*16*0.15; lastY=scrollY; lastT=n; }, {passive:true});
-  window.addEventListener('deviceorientation', (e) => { if(e.gamma) velX+=e.gamma*0.05; if(e.beta) velY+=(e.beta-45)*0.03; });
-  coin.style.pointerEvents='auto'; coin.style.cursor='pointer';
-  coin.addEventListener('click', ()=>{ velX=(Math.random()-0.5)*18; velY=8+Math.random()*6; });
-  updateCoin();
 
+  // Unified pointer/touch handler
+  function handleStart(e) {
+    e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    const rect = coin.getBoundingClientRect();
+    if (touch.clientX < rect.left || touch.clientX > rect.right || touch.clientY < rect.top || touch.clientY > rect.bottom) return;
+    
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
+    dragStartCoinX = coinX; 
+    dragStartCoinY = coinY;
+    dragTargetX = coinX; 
+    dragTargetY = coinY;
+    dragStartTime = Date.now();
+    wasDragged = false;
+    isDragging = true;
+    coin.classList.add('dragging');
+  }
+
+  function handleMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    const dx = touch.clientX - dragStartX;
+    const dy = dragStartY - touch.clientY;
+    
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) wasDragged = true;
+    
+    const screenX = touch.clientX - 26;
+    const screenY = window.innerHeight - touch.clientY - FLOOR;
+    
+    dragTargetX = Math.max(0, Math.min(innerWidth - 52, screenX));
+    dragTargetY = Math.max(0, screenY);
+  }
+
+  function handleEnd(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    
+    if (wasDragged) {
+      const dx = dragTargetX - dragStartCoinX;
+      const dy = dragTargetY - dragStartCoinY;
+      velX = dx * 0.18;
+      velY = dy * 0.15;
+    } else {
+      // Tap to toss!
+      velX = (Math.random() - 0.5) * 20;
+      velY = 8 + Math.random() * 8;
+    }
+    
+    isDragging = false;
+    coin.classList.remove('dragging');
+  }
+
+  window.addEventListener('scroll', () => { if(!isDragging){ const n=Date.now(), dy=scrollY-lastY; velX+=(dy/Math.max(n-lastT,1))*16*0.4; if(Math.abs(dy)>2) velY+=Math.abs(dy/Math.max(n-lastT,1))*16*0.15; lastY=scrollY; lastT=n; } }, {passive:true});
+  window.addEventListener('deviceorientation', (e) => { if(!isDragging){ if(e.gamma) velX+=e.gamma*0.05; if(e.beta) velY+=(e.beta-45)*0.03; } });
+  
+  coin.addEventListener('pointerdown', handleStart);
+  coin.addEventListener('touchstart', handleStart, {passive: false});
+  coin.addEventListener('mousedown', handleStart);
+  window.addEventListener('pointermove', handleMove);
+  window.addEventListener('touchmove', handleMove, {passive: false});
+  window.addEventListener('mousemove', handleMove);
+  window.addEventListener('pointerup', handleEnd);
+  window.addEventListener('touchend', handleEnd);
+  window.addEventListener('mouseup', handleEnd);
+  window.addEventListener('touchcancel', handleEnd);
+
+  updateCoin();
   document.getElementById('emailLink').href = 'mailto:bhaamtoonextras@gmail.com';
   document.getElementById('bidModal').addEventListener('click', e => { if(e.target === document.getElementById('bidModal')) closeModal(); });
-  
   loadAll(); startAutoRefresh();
 </script>
 </body>
