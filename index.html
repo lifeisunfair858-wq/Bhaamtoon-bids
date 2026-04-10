@@ -175,6 +175,7 @@
   .lb-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
   .lb-name { font-size: 0.8rem; font-weight: 700; }
   .lb-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--yellow); }
+  .lb-empty { font-size: 0.8rem; color: var(--muted); font-family: 'Space Mono', monospace; padding: 12px 0; text-align: center; }
 
   .contact-strip { background: linear-gradient(135deg, #0d1a18, #1a0d10); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 48px 24px; text-align: center; }
   .contact-strip h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 3px; margin-bottom: 12px; }
@@ -233,12 +234,10 @@
   body.bidding-closed .slot-card { opacity: 0.6; pointer-events: none; }
   body.bidding-closed .bid-btn { background: var(--border) !important; color: var(--muted) !important; }
 
-  /* ── WINNING BADGE ── */
   .winning-badge { display:none; align-items:center; gap:6px; font-size:0.75rem; font-family:'Space Mono',monospace; color:#000; background:var(--yellow); padding:7px 14px; border-radius:6px; margin-bottom:14px; font-weight:700; animation: winPulse 1.5s ease-in-out infinite; }
   .winning-badge.show { display:flex; }
   @keyframes winPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,214,10,0.4);} 50%{box-shadow:0 0 0 8px rgba(255,214,10,0);} }
 
-  /* ── CONFIRM STEP ── */
   .confirm-box { background:rgba(0,245,212,0.06); border:1px solid rgba(0,245,212,0.25); border-radius:10px; padding:20px; margin-top:20px; }
   .confirm-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:2px; margin-bottom:14px; }
   .confirm-title span { color:var(--cyan); }
@@ -255,11 +254,9 @@
   .btn-confirm:hover { background:var(--yellow); }
   .btn-confirm:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
 
-  /* ── SHARE BUTTON ── */
   .share-btn { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:11px 22px; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:6px; font-family:'Space Mono',monospace; font-size:0.75rem; cursor:pointer; transition:border-color 0.2s,color 0.2s; width:100%; justify-content:center; }
   .share-btn:hover { border-color:var(--cyan); color:var(--cyan); }
 
-  /* ── CONFETTI CANVAS ── */
   #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:9999; display:none; }
 </style>
 </head>
@@ -537,7 +534,6 @@
       <button class="modal-submit" id="submitBtn" onclick="showConfirm()">REVIEW BID →</button>
     </div>
 
-    <!-- CONFIRM STEP -->
     <div id="confirmStep" style="display:none;">
       <div class="confirm-box">
         <div class="confirm-title">CONFIRM YOUR <span>BID</span></div>
@@ -546,7 +542,7 @@
         <div class="confirm-row"><span class="clabel">YOUR BID</span><span class="confirm-amount-big" id="confirmAmount">₹—</span></div>
         <div class="confirm-row"><span class="clabel">NOTE</span><span class="cvalue" id="confirmNote" style="font-size:0.75rem;max-width:60%;text-align:right;">—</span></div>
       </div>
-      <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;font-family:'Space Mono',monospace;">⚠️ Bids are final and cannot be undone. Only submit if you intend to pay if you win.</p>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;font-family:'Space Mono',monospace;">⚠️ Bids are final and cannot be undone.</p>
       <div class="confirm-btns">
         <button class="btn-back" onclick="backToForm()">← EDIT</button>
         <button class="btn-confirm" id="confirmBtn" onclick="submitBid()">✅ CONFIRM BID</button>
@@ -613,11 +609,11 @@
 
   async function sendOTP() {
     const email = document.getElementById('emailInput').value.trim();
-    if (!/^\S+@\S+\.\S+$/.test(email)) { showToast('Valid email!', true); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { showToast('Please enter a valid email address', true); return; }
     if (!canRequest(email)) { showToast(`⚠️ Limit ${MAX_OTP} requests today!`, true); return; }
     const btn = document.getElementById('sendOtpBtn'); btn.disabled = true; btn.textContent = 'SENDING...';
     const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-    if (error) { showToast('Failed', true); btn.disabled = false; btn.textContent = 'SEND CODE →'; return; }
+    if (error) { showToast('Failed to send code', true); btn.disabled = false; btn.textContent = 'SEND CODE →'; return; }
     incrementOTP(email); saveOTPState(email, currentSlot);
     document.getElementById('emailInputSection').style.display = 'none';
     document.getElementById('otpVerifySection').style.display = 'block';
@@ -628,10 +624,10 @@
   async function verifyOTP() {
     const email = document.getElementById('emailInput').value.trim();
     const token = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
-    if (token.length < 6) { showToast('6 digits!', true); return; }
+    if (token.length < 6) { showToast('Please enter all 6 digits', true); return; }
     const btn = document.getElementById('verifyOtpBtn'); btn.disabled = true; btn.textContent = 'VERIFYING...';
     const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
-    if (error) { showToast('Wrong!', true); btn.disabled = false; btn.textContent = 'VERIFY →'; return; }
+    if (error) { showToast('Incorrect code. Please try again', true); btn.disabled = false; btn.textContent = 'VERIFY →'; return; }
     verifiedEmail = email; sessionStorage.removeItem('bt_otp'); localStorage.removeItem('bt_otp_back');
     showOTPSuccess(email);
   }
@@ -655,7 +651,7 @@
     if (data && data.length > 0) {
       nameInput.value = data[0].bidder_name; linkInput.value = data[0].bid_link || '';
       nameInput.disabled = true; linkInput.disabled = true;
-      nameHint.textContent = '🔒 Name locked to this email (previous bidder)';
+      nameHint.textContent = '🔒 Name locked to this email';
       nameHint.style.color = 'var(--cyan)';
       localStorage.setItem('bt_info', JSON.stringify({ name: data[0].bidder_name, link: data[0].bid_link, email }));
     } else if (savedInfo && savedInfo.email === email) {
@@ -666,13 +662,13 @@
     } else {
       nameInput.value = ''; linkInput.value = '';
       nameInput.disabled = false; linkInput.disabled = false;
-      nameHint.textContent = 'Name will be locked to your email after first bid';
+      nameHint.textContent = 'Name will be locked after first bid';
       nameHint.style.color = 'var(--muted)';
     }
     document.getElementById('bidAmount').value = '';
     document.getElementById('bidNote').value = '';
     document.getElementById('submitBtn').disabled = false;
-    document.getElementById('submitBtn').textContent = 'SUBMIT BID →';
+    document.getElementById('submitBtn').textContent = 'REVIEW BID →';
   }
 
   function otpInput(el, n) { el.value = el.value.replace(/\D/g,'').slice(-1); if(el.value && n) document.getElementById(n).focus(); if(['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('').length===6) verifyOTP(); }
@@ -680,12 +676,13 @@
   function startResend(email, sec=30) {
     const cnt=document.getElementById('resendCountdown'), btn=document.getElementById('resendBtn'); btn.className='disabled'; cnt.textContent=sec;
     if(resendTimer) clearInterval(resendTimer);
-    resendTimer = setInterval(() => { sec--; cnt.textContent=sec; if(sec<=0){ clearInterval(resendTimer); btn.className=''; btn.onclick=()=>{ startResend(email); db.auth.signInWithOtp({email,options:{shouldCreateUser:true}}); showToast('📧 Resent!'); }; } }, 1000);
+    resendTimer = setInterval(() => { sec--; cnt.textContent=sec; if(sec<=0){ clearInterval(resendTimer); btn.className=''; btn.onclick=()=>{ startResend(email); db.auth.signInWithOtp({email,options:{shouldCreateUser:true}}); showToast('📧 Code resent!'); }; } }, 1000);
   }
 
   function openModal(slotId) {
     currentSlot = slotId;
     document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('confirmStep').style.display = 'none';
     document.getElementById('modalForm').style.display = 'none';
     const saved = getOTPState();
     if (verifiedEmail) {
@@ -715,7 +712,6 @@
     const t = topBids[slotId] || 0;
     document.getElementById('modalCurrentBid').textContent = t > 0 ? '₹' + t.toLocaleString('en-IN') : 'No bids';
     document.getElementById('minBidDisplay').textContent = '₹' + (t + 50).toLocaleString('en-IN');
-    // Check if verified user is currently winning
     checkWinning(slotId);
   }
 
@@ -730,6 +726,7 @@
       badge.classList.remove('show');
     }
   }
+
   function closeModal() {
     document.getElementById('bidModal').classList.remove('open');
     document.getElementById('confirmStep').style.display = 'none';
@@ -743,7 +740,8 @@
   }
 
   function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
   async function isNameTakenByOtherEmail(name, currentEmail) {
@@ -758,12 +756,11 @@
     const note = document.getElementById('bidNote').value.trim();
     const top = topBids[currentSlot] || 0;
 
-    if (!name) { showToast('Enter your name!', true); return; }
-    if (!amount || amount <= 0) { showToast('Enter a valid amount!', true); return; }
-    if (!verifiedEmail) { showToast('Verify your email first!', true); return; }
-    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top + 50).toLocaleString('en-IN')}!`, true); return; }
+    if (!name) { showToast('Please enter your name', true); return; }
+    if (!amount || amount <= 0) { showToast('Please enter a valid amount', true); return; }
+    if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
+    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top + 50).toLocaleString('en-IN')}`, true); return; }
 
-    // Populate confirm step
     document.getElementById('confirmSlot').textContent = SLOT_NAMES[currentSlot];
     document.getElementById('confirmName').textContent = name;
     document.getElementById('confirmAmount').textContent = '₹' + amount.toLocaleString('en-IN');
@@ -779,17 +776,24 @@
   }
 
   function shareBid() {
-    const name = document.getElementById('bidName').value.trim() || localStorage.getItem('bt_name') || 'Someone';
+    const WEBSITE_URL = 'https://bhaam.in';
+    const name = document.getElementById('bidName')?.value.trim() || localStorage.getItem('bt_name') || 'Someone';
     const amount = document.getElementById('confirmAmount')?.textContent || '';
-    const text = `🎬 I just placed a bid on BHAAMTOON's scene auction! ${amount} for ${SLOT_NAMES[currentSlot] || 'a scene slot'}. Check it out 👇\n${window.location.href}`;
+    const shareText = `🎬 I just placed a bid on BHAAMTOON's scene auction! ${amount} for ${SLOT_NAMES[currentSlot] || 'a scene slot'}.`;
+    
     if (navigator.share) {
-      navigator.share({ title: 'BHAAMTOON Bid', text }).catch(() => {});
+      navigator.share({ title: '🎬 BHAAMTOON Bid', text: shareText, url: WEBSITE_URL })
+        .catch((err) => { if (err.name !== 'AbortError') fallbackCopy(shareText + ' ' + WEBSITE_URL); });
     } else {
-      navigator.clipboard.writeText(text).then(() => showToast('📋 Copied to clipboard!')).catch(() => showToast('Share: ' + window.location.href));
+      fallbackCopy(shareText + ' ' + WEBSITE_URL);
     }
   }
 
-  // ── CONFETTI ──
+  function fallbackCopy(text) {
+    navigator.clipboard?.writeText(text).then(() => showToast('📋 Link copied!'))
+      .catch(() => prompt('Copy this link to share:', text));
+  }
+
   function launchConfetti() {
     const canvas = document.getElementById('confettiCanvas');
     canvas.style.display = 'block';
@@ -833,18 +837,18 @@
     const link = document.getElementById('bidLink').value.trim();
     const amount = parseInt(document.getElementById('bidAmount').value);
     const note = document.getElementById('bidNote').value.trim();
-    if (!name) { showToast('Enter name!', true); return; }
-    if (!amount || amount<=0) { showToast('Valid amount!', true); return; }
-    if (!verifiedEmail) { showToast('Verify email!', true); return; }
+    if (!name) { showToast('Please enter your name', true); return; }
+    if (!amount || amount<=0) { showToast('Please enter a valid amount', true); return; }
+    if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
     const top = topBids[currentSlot] || 0;
-    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}!`, true); return; }
+    if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}`, true); return; }
     const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
     if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
-      showToast(`❌ Email locked to "${existing[0].bidder_name}"!`, true);
+      showToast(`❌ Email locked to "${existing[0].bidder_name}"`, true);
       document.getElementById('bidName').value = existing[0].bidder_name;
       return;
     }
-    if (await isNameTakenByOtherEmail(name, verifiedEmail)) { showToast(`❌ "${name}" is registered with another email!`, true); return; }
+    if (await isNameTakenByOtherEmail(name, verifiedEmail)) { showToast(`❌ "${name}" is registered with another email`, true); return; }
     const confirmBtn = document.getElementById('confirmBtn');
     if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'SUBMITTING...'; }
     const btn = document.getElementById('submitBtn'); if(btn){ btn.disabled = true; btn.textContent = 'SUBMITTING...'; }
@@ -879,13 +883,14 @@
   }
   updateTimer();
 
-  // COIN PHYSICS - FULLY WORKING
+  // COIN PHYSICS - NO CEILING, FREE MOVEMENT
   const coin = document.getElementById('coin');
   const FLOOR = 24, FRICTION = 0.88, BOUNCE = 0.4, GRAVITY = 0.6;
   let coinX = 80, coinY = 0, velX = 0, velY = 0, rot = 0, lastY = scrollY, lastT = Date.now();
   let isDragging = false, dragTargetX = 80, dragTargetY = 0, dragStartTime = 0, wasDragged = false;
   let dragStartCoinX = 0, dragStartCoinY = 0, dragStartX = 0, dragStartY = 0;
   const DRAG_SMOOTHING = 0.12;
+  let tiltEnabled = true, lastGamma = 0, lastBeta = 0;
 
   function updateCoin() {
     if (isDragging) {
@@ -897,7 +902,7 @@
       coinX += velX; coinY += velY;
       if (coinY <= 0) { coinY = 0; velY = -velY * BOUNCE; if (Math.abs(velY) < 0.5) velY = 0; }
       if (coinX < 0) { coinX = 0; velX = Math.abs(velX) * BOUNCE; }
-      if (coinX > innerWidth - 52) { coinX = innerWidth - 52; velX = -Math.abs(velX) * BOUNCE; }
+      if (coinX > window.innerWidth - 52) { coinX = window.innerWidth - 52; velX = -Math.abs(velX) * BOUNCE; }
       if (coinY <= 0) velX *= FRICTION;
       rot += velX * 3;
     }
@@ -909,21 +914,16 @@
     requestAnimationFrame(updateCoin);
   }
 
-  // Unified pointer/touch handler
   function handleStart(e) {
     e.preventDefault();
     const touch = e.touches ? e.touches[0] : e;
     const rect = coin.getBoundingClientRect();
     if (touch.clientX < rect.left || touch.clientX > rect.right || touch.clientY < rect.top || touch.clientY > rect.bottom) return;
-    
-    dragStartX = touch.clientX;
-    dragStartY = touch.clientY;
-    dragStartCoinX = coinX; 
-    dragStartCoinY = coinY;
-    dragTargetX = coinX; 
-    dragTargetY = coinY;
-    dragStartTime = Date.now();
-    wasDragged = false;
+    tiltEnabled = false;
+    dragStartX = touch.clientX; dragStartY = touch.clientY;
+    dragStartCoinX = coinX; dragStartCoinY = coinY;
+    dragTargetX = coinX; dragTargetY = coinY;
+    dragStartTime = Date.now(); wasDragged = false;
     isDragging = true;
     coin.classList.add('dragging');
   }
@@ -934,37 +934,32 @@
     const touch = e.touches ? e.touches[0] : e;
     const dx = touch.clientX - dragStartX;
     const dy = dragStartY - touch.clientY;
-    
     if (Math.abs(dx) > 8 || Math.abs(dy) > 8) wasDragged = true;
-    
     const screenX = touch.clientX - 26;
     const screenY = window.innerHeight - touch.clientY - FLOOR;
-    
-    dragTargetX = Math.max(0, Math.min(innerWidth - 52, screenX));
+    dragTargetX = Math.max(0, Math.min(window.innerWidth - 52, screenX));
     dragTargetY = Math.max(0, screenY);
   }
 
   function handleEnd(e) {
     if (!isDragging) return;
     e.preventDefault();
-    
     if (wasDragged) {
       const dx = dragTargetX - dragStartCoinX;
       const dy = dragTargetY - dragStartCoinY;
       velX = dx * 0.18;
       velY = dy * 0.15;
     } else {
-      // Tap to toss!
       velX = (Math.random() - 0.5) * 20;
       velY = 8 + Math.random() * 8;
     }
-    
     isDragging = false;
     coin.classList.remove('dragging');
+    setTimeout(() => { tiltEnabled = true; }, 500);
   }
 
   window.addEventListener('scroll', () => { if(!isDragging){ const n=Date.now(), dy=scrollY-lastY; velX+=(dy/Math.max(n-lastT,1))*16*0.4; if(Math.abs(dy)>2) velY+=Math.abs(dy/Math.max(n-lastT,1))*16*0.15; lastY=scrollY; lastT=n; } }, {passive:true});
-  window.addEventListener('deviceorientation', (e) => { if(!isDragging){ if(e.gamma) velX+=e.gamma*0.05; if(e.beta) velY+=(e.beta-45)*0.03; } });
+  window.addEventListener('deviceorientation', (e) => { if(!tiltEnabled||isDragging) return; const gamma=e.gamma||0, beta=e.beta||0; const smoothGamma=lastGamma*0.7+gamma*0.3, smoothBeta=lastBeta*0.7+beta*0.3; if(Math.abs(smoothGamma)>5) velX+=smoothGamma*0.008; if(beta>20&&beta<160) velY+=(beta-90)*0.005; lastGamma=smoothGamma; lastBeta=smoothBeta; velX=Math.max(-8,Math.min(8,velX)); velY=Math.max(-8,Math.min(8,velY)); });
   
   coin.addEventListener('pointerdown', handleStart);
   coin.addEventListener('touchstart', handleStart, {passive: false});
