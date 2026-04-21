@@ -1013,7 +1013,17 @@
 
   db.channel('bids').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, async (p) => { await loadTopBidForSlot(p.new.slot_id); if(currentSlot===p.new.slot_id){ loadLeaderboard(p.new.slot_id); updateModalBid(p.new.slot_id); } showToast('🔥 New bid!'); }).subscribe();
 
-  const DEADLINE = new Date('2026-04-20T23:59:00+05:30').getTime();
+  let DEADLINE = new Date('2026-04-20T23:59:00+05:30').getTime(); // fallback
+
+  async function loadDeadlineFromDB() {
+    const { data } = await db.from('settings').select('value').eq('key', 'deadline').single();
+    if (data && data.value) {
+      DEADLINE = new Date(data.value).getTime();
+      updateTimer();
+    }
+  }
+  loadDeadlineFromDB();
+
   function updateTimer() {
     const diff = DEADLINE - Date.now();
     if (diff <= 0) { document.getElementById('timerUnits').style.display='none'; document.getElementById('timerClosed').style.display='block'; document.body.classList.add('bidding-closed'); return; }
