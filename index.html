@@ -1019,6 +1019,16 @@
     const { data } = await db.from('settings').select('value').eq('key', 'deadline').single();
     if (data && data.value) {
       DEADLINE = new Date(data.value).getTime();
+      // Reset closed state if new deadline is in the future
+      if (DEADLINE > Date.now()) {
+        document.body.classList.remove('bidding-closed');
+        const timerUnits = document.getElementById('timerUnits');
+        const timerClosed = document.getElementById('timerClosed');
+        const timerLabel = document.querySelector('.timer-label');
+        if (timerUnits) timerUnits.style.display = 'flex';
+        if (timerClosed) timerClosed.style.display = 'none';
+        if (timerLabel) timerLabel.style.display = 'block';
+      }
       updateTimer();
     }
   }
