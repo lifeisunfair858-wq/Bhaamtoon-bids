@@ -228,6 +228,8 @@
       <button class="action-btn export" onclick="exportAllCSV()">⬇ EXPORT ALL BIDS (CSV)</button>
       <button class="action-btn export-winners" onclick="exportWinnersCSV()">🏆 EXPORT WINNERS ONLY</button>
       <button class="action-btn refresh" onclick="loadData()">↻ REFRESH</button>
+      <button class="action-btn" onclick="clearSlotBids()" style="background:#7a1a1a;color:#fff;">🗑 CLEAR SLOT BIDS</button>
+      <button class="action-btn" onclick="clearAllBids()" style="background:var(--red);color:#fff;">⚠️ CLEAR ALL BIDS</button>
     </div>
 
     <!-- ALL BIDS TABLE -->
@@ -261,6 +263,7 @@
             <th>BID AMOUNT</th>
             <th>WHAT TO SHOW</th>
             <th>TIME</th>
+            <th>DELETE</th>
           </tr>
         </thead>
         <tbody id="bidsTableBody">
@@ -432,7 +435,7 @@
 
     const tbody = document.getElementById('bidsTableBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-table">No bids found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-table">No bids found</td></tr>';
       return;
     }
 
@@ -448,6 +451,7 @@
           <td class="td-amount ${isTop ? 'top' : ''}">₹${b.bid_amount.toLocaleString('en-IN')}</td>
           <td class="td-note">${b.bid_note ? escHtml(b.bid_note) : '<span style="color:var(--muted)">—</span>'}</td>
           <td class="td-time">${time}</td>
+          <td><button onclick="deleteBid('${b.id}')" style="background:var(--red);color:#fff;border:none;font-family:'Space Mono',monospace;font-size:0.6rem;padding:5px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;">🗑 DEL</button></td>
         </tr>`;
     }).join('');
   }
@@ -495,6 +499,37 @@
     a.href = URL.createObjectURL(blob);
     a.download = filename;
     a.click();
+  }
+
+  // ─── DELETE FUNCTIONS ───
+  async function deleteBid(id) {
+    if (!confirm('Delete this bid? This cannot be undone.')) return;
+    const { error } = await db.from('bids').delete().eq('id', id);
+    if (error) { showToast('Failed to delete!', true); return; }
+    showToast('🗑 Bid deleted!');
+    await loadData();
+  }
+
+  async function clearSlotBids() {
+    const slot = document.getElementById('filterSlot').value;
+    if (slot === 'all') {
+      showToast('Please select a specific slot first from the filter!', true);
+      return;
+    }
+    if (!confirm(`Clear ALL bids for ${SLOT_NAMES[slot]}? Cannot be undone!`)) return;
+    const { error } = await db.from('bids').delete().eq('slot_id', slot);
+    if (error) { showToast('Failed to clear!', true); return; }
+    showToast(`🗑 All bids for ${SLOT_NAMES[slot]} cleared!`);
+    await loadData();
+  }
+
+  async function clearAllBids() {
+    if (!confirm('⚠️ DELETE ALL BIDS from ALL slots? This CANNOT be undone!')) return;
+    if (!confirm('Are you absolutely sure? All bid data will be gone forever!')) return;
+    const { error } = await db.from('bids').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) { showToast('Failed to clear!', true); return; }
+    showToast('🗑 All bids cleared!');
+    await loadData();
   }
 
   // ─── REALTIME ───
