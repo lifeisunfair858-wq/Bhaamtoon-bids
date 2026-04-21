@@ -208,6 +208,21 @@
       <div style="color:var(--muted); font-family:monospace; font-size:0.8rem;">Loading...</div>
     </div>
 
+    <!-- DEADLINE MANAGER -->
+    <div class="section-title" style="margin-bottom:16px;">⏳ BIDDING <span>DEADLINE</span></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">CURRENT DEADLINE</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--cyan);margin-bottom:16px;" id="currentDeadlineDisplay">Loading...</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">SET NEW DATE & TIME (IST)</div>
+          <input type="datetime-local" id="deadlineInput" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.9rem;outline:none;">
+        </div>
+        <button onclick="updateDeadline()" style="background:var(--cyan);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:10px 20px;border-radius:6px;cursor:pointer;">UPDATE →</button>
+      </div>
+      <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:10px;">✅ Changes apply to bhaam.in instantly — no code editing needed!</div>
+    </div>
+
     <!-- ACTIONS -->
     <div class="actions-bar">
       <button class="action-btn export" onclick="exportAllCSV()">⬇ EXPORT ALL BIDS (CSV)</button>
@@ -298,8 +313,34 @@
   let topBidPerSlot = {};
 
   async function initDashboard() {
+    await loadDeadline();
     await loadData();
     subscribeRealtime();
+  }
+
+  // ─── DEADLINE MANAGER ───
+  async function loadDeadline() {
+    const { data, error } = await db.from('settings').select('value').eq('key', 'deadline').single();
+    if (error || !data) {
+      document.getElementById('currentDeadlineDisplay').textContent = 'Not set yet';
+      return;
+    }
+    const d = new Date(data.value);
+    document.getElementById('currentDeadlineDisplay').textContent =
+      d.toLocaleString('en-IN', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
+    // Pre-fill input with current deadline
+    const offset = d.getTime() - (d.getTimezoneOffset() * 60000);
+    document.getElementById('deadlineInput').value = new Date(offset).toISOString().slice(0,16);
+  }
+
+  async function updateDeadline() {
+    const val = document.getElementById('deadlineInput').value;
+    if (!val) { showToast('Please pick a date and time!', true); return; }
+    const isoIST = new Date(val).toISOString().replace('Z', '+05:30');
+    const { error } = await db.from('settings').upsert({ key: 'deadline', value: isoIST });
+    if (error) { showToast('Failed to update! ' + error.message, true); return; }
+    showToast('✅ Deadline updated! bhaam.in reflects this instantly.');
+    loadDeadline();
   }
 
   async function loadData() {
