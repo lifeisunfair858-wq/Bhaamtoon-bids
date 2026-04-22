@@ -1013,28 +1013,30 @@
 
   db.channel('bids').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids' }, async (p) => { await loadTopBidForSlot(p.new.slot_id); if(currentSlot===p.new.slot_id){ loadLeaderboard(p.new.slot_id); updateModalBid(p.new.slot_id); } showToast('🔥 New bid!'); }).subscribe();
 
-  let DEADLINE = new Date('2026-04-20T23:59:00+05:30').getTime(); // fallback
+  let DEADLINE = null; // wait for Supabase
+  let timerStarted = false;
 
   async function loadDeadlineFromDB() {
     const { data } = await db.from('settings').select('value').eq('key', 'deadline').single();
-    if (data && data.value) {
-      DEADLINE = new Date(data.value).getTime();
-      // Reset closed state if new deadline is in the future
-      if (DEADLINE > Date.now()) {
-        document.body.classList.remove('bidding-closed');
-        const timerUnits = document.getElementById('timerUnits');
-        const timerClosed = document.getElementById('timerClosed');
-        const timerLabel = document.querySelector('.timer-label');
-        if (timerUnits) timerUnits.style.display = 'flex';
-        if (timerClosed) timerClosed.style.display = 'none';
-        if (timerLabel) timerLabel.style.display = 'block';
-      }
-      updateTimer();
+    DEADLINE = (data && data.value)
+      ? new Date(data.value).getTime()
+      : new Date('2026-04-20T23:59:00+05:30').getTime();
+    // Reset closed state if deadline is in future
+    if (DEADLINE > Date.now()) {
+      document.body.classList.remove('bidding-closed');
+      const tu = document.getElementById('timerUnits');
+      const tc = document.getElementById('timerClosed');
+      const tl = document.querySelector('.timer-label');
+      if (tu) tu.style.display = 'flex';
+      if (tc) tc.style.display = 'none';
+      if (tl) tl.style.display = 'block';
     }
+    if (!timerStarted) { timerStarted = true; updateTimer(); }
   }
   loadDeadlineFromDB();
 
   function updateTimer() {
+    if (!DEADLINE) { setTimeout(updateTimer, 200); return; }
     const diff = DEADLINE - Date.now();
     if (diff <= 0) { document.getElementById('timerUnits').style.display='none'; document.getElementById('timerClosed').style.display='block'; document.body.classList.add('bidding-closed'); return; }
     document.getElementById('timerDays').textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
@@ -1043,7 +1045,6 @@
     document.getElementById('timerSecs').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
     setTimeout(updateTimer, 1000);
   }
-  updateTimer();
 
   // COIN PHYSICS - CIRCULAR
   const coin = document.getElementById('coin');
