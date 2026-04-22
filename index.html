@@ -6,6 +6,7 @@
 <title>BHAAMTOON — Sponsor a Scene</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
   :root {
     --bg: #0a0a0f;
@@ -620,6 +621,47 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // EMAILJS
+  const EJS_SERVICE  = 'service_uh3qili';
+  const EJS_TEMPLATE = 'template_21vgjni';
+  const EJS_KEY      = '-CU4EmFLT7vUHmJtM';
+  emailjs.init(EJS_KEY);
+
+  const SLOT_NAMES_MAP = {
+    slot1: 'Scene 01 — Opening Banner',
+    slot2: 'Scene 03 — Office Wall',
+    slot3: 'Scene 05 — Phone Screen',
+    slot4: 'Scene 07 — Shop Sign',
+    slot5: 'End Card Shoutout'
+  };
+
+  async function notifyOutbid(slotId, newAmount) {
+    // Find previous top bidder for this slot (second highest now)
+    const { data } = await db
+      .from('bids')
+      .select('bidder_name, email, bid_amount')
+      .eq('slot_id', slotId)
+      .order('bid_amount', { ascending: false })
+      .limit(2);
+
+    if (!data || data.length < 2) return; // no previous bidder
+    const outbid = data[1]; // second highest = the one just outbid
+    if (!outbid.email) return; // no email to notify
+
+    try {
+      await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+        to_email:   outbid.email,
+        to_name:    outbid.bidder_name,
+        slot_name:  SLOT_NAMES_MAP[slotId] || slotId,
+        new_amount: newAmount.toLocaleString('en-IN'),
+        your_amount: outbid.bid_amount.toLocaleString('en-IN')
+      });
+      console.log('Outbid email sent to', outbid.email);
+    } catch (e) {
+      console.error('EmailJS error:', e);
+    }
+  }
+
   let verifiedEmail = null, resendTimer = null, currentSlot = null, topBids = {}, autoRefresh = null;
   const SLOTS = ['slot1','slot2','slot3','slot4','slot5'];
   const SLOT_NAMES = { slot1:'SCENE 01', slot2:'SCENE 03', slot3:'SCENE 05', slot4:'SCENE 07', slot5:'END CARD' };
@@ -992,6 +1034,9 @@
       }]);
       
       if (error) throw error;
+
+      // Notify previous top bidder they've been outbid
+      notifyOutbid(currentSlot, amount);
       
       localStorage.setItem('bt_info', JSON.stringify({ name, link, note, email: verifiedEmail }));
       document.getElementById('confirmStep').style.display = 'none';
