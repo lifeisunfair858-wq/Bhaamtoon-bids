@@ -644,18 +644,29 @@
       .order('bid_amount', { ascending: false })
       .limit(2);
 
-    if (!data || data.length < 2) return; // no previous bidder
-    const outbid = data[1]; // second highest = the one just outbid
-    if (!outbid.email) return; // no email to notify
+    if (!data || data.length < 2) return;
+    const outbid = data[1];
+    if (!outbid.email) return;
+
+    // ─── 12-HOUR COOLDOWN ───
+    const cooldownKey = 'bt_notified_' + slotId + '_' + outbid.email.replace('@','_').replace('.','_');
+    const lastNotified = parseInt(localStorage.getItem(cooldownKey) || '0');
+    const twelveHours = 12 * 60 * 60 * 1000;
+    if (Date.now() - lastNotified < twelveHours) {
+      console.log('Outbid email skipped — 12hr cooldown active for', outbid.email);
+      return;
+    }
 
     try {
       await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
-        to_email:   outbid.email,
-        to_name:    outbid.bidder_name,
-        slot_name:  SLOT_NAMES_MAP[slotId] || slotId,
-        new_amount: newAmount.toLocaleString('en-IN'),
+        to_email:    outbid.email,
+        to_name:     outbid.bidder_name,
+        slot_name:   SLOT_NAMES_MAP[slotId] || slotId,
+        new_amount:  newAmount.toLocaleString('en-IN'),
         your_amount: outbid.bid_amount.toLocaleString('en-IN')
       });
+      // Save timestamp so we don't email again for 12 hours
+      localStorage.setItem(cooldownKey, Date.now().toString());
       console.log('Outbid email sent to', outbid.email);
     } catch (e) {
       console.error('EmailJS error:', e);
