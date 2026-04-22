@@ -6,6 +6,7 @@
 <title>BHAAMTOON — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
   :root {
     --bg: #0a0a0f;
@@ -264,6 +265,7 @@
             <th>WHAT TO SHOW</th>
             <th>TIME</th>
             <th>DEL</th>
+            <th>EMAIL</th>
           </tr>
         </thead>
         <tbody id="bidsTableBody">
@@ -304,6 +306,12 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // ─── EMAILJS ───
+  const EJS_SERVICE  = 'service_uh3qili';
+  const EJS_TEMPLATE = 'template_21vgjni';
+  const EJS_KEY      = '-CU4EmFLT7vUHmJtM';
+  emailjs.init(EJS_KEY);
+
   const SLOT_NAMES = {
     slot1: 'Scene 01 — Opening Banner',
     slot2: 'Scene 03 — Office Wall',
@@ -311,6 +319,24 @@
     slot4: 'Scene 07 — Shop Sign',
     slot5: 'End Card Shoutout'
   };
+
+  async function sendManualEmail(bidderName, email, slotId, bidAmount) {
+    if (!email) { showToast('This bidder has no email!', true); return; }
+    const customMsg = prompt(`Custom message to send to ${bidderName} (leave blank for default outbid template):`);
+    if (customMsg === null) return; // cancelled
+    try {
+      await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+        to_email:    email,
+        to_name:     bidderName,
+        slot_name:   SLOT_NAMES[slotId] || slotId,
+        new_amount:  customMsg || 'Check bhaam.in for latest bids',
+        your_amount: bidAmount.toLocaleString('en-IN')
+      });
+      showToast('📧 Email sent to ' + bidderName + '!');
+    } catch (e) {
+      showToast('Failed to send: ' + e.text, true);
+    }
+  }
 
   let allBids = [];
   let topBidPerSlot = {};
@@ -435,7 +461,7 @@
 
     const tbody = document.getElementById('bidsTableBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-table">No bids found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-table">No bids found</td></tr>';
       return;
     }
 
@@ -452,6 +478,7 @@
           <td class="td-note">${b.bid_note ? escHtml(b.bid_note) : '<span style="color:var(--muted)">—</span>'}</td>
           <td class="td-time">${time}</td>
           <td><button onclick="deleteBid('${b.id}')" style="background:#ff1744;color:#fff;border:none;font-family:'Space Mono',monospace;font-size:0.6rem;padding:5px 8px;border-radius:4px;cursor:pointer;">🗑</button></td>
+          <td><button onclick="sendManualEmail('${escHtml(b.bidder_name)}','${b.email||''}','${b.slot_id}',${b.bid_amount})" style="background:#1a3a5c;color:#00f5d4;border:1px solid #00f5d4;font-family:'Space Mono',monospace;font-size:0.6rem;padding:5px 8px;border-radius:4px;cursor:pointer;">📧</button></td>
         </tr>`;
     }).join('');
   }
