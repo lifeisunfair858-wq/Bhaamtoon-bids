@@ -209,6 +209,65 @@
       <div style="color:var(--muted); font-family:monospace; font-size:0.8rem;">Loading...</div>
     </div>
 
+    <!-- CMS CONTENT MANAGER -->
+    <div class="section-title" style="margin-bottom:16px;">✏️ SITE <span>CONTENT</span></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);margin-bottom:16px;letter-spacing:1px;">Edit any text on bhaam.in — changes apply instantly without touching GitHub!</div>
+
+      <!-- STATS -->
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);letter-spacing:2px;margin-bottom:12px;">// STATS BAR</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div>
+          <label style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:4px;">SUBSCRIBERS</label>
+          <input id="cms-input-subs" type="text" placeholder="97K+" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.85rem;outline:none;">
+        </div>
+        <div>
+          <label style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:4px;">MONTHLY VIEWS</label>
+          <input id="cms-input-views" type="text" placeholder="1M+" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.85rem;outline:none;">
+        </div>
+        <div>
+          <label style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:4px;">INDIAN AUDIENCE %</label>
+          <input id="cms-input-indian" type="text" placeholder="82%" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.85rem;outline:none;">
+        </div>
+        <div>
+          <label style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:4px;">CORE AGE GROUP</label>
+          <input id="cms-input-age" type="text" placeholder="18–34" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.85rem;outline:none;">
+        </div>
+      </div>
+
+      <!-- EPISODE -->
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);letter-spacing:2px;margin-bottom:12px;">// EPISODE INFO</div>
+      <div style="margin-bottom:20px;">
+        <label style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:4px;">EPISODE SUBTITLE (below "Available Scene Slots")</label>
+        <input id="cms-input-episode-sub" type="text" placeholder='// Video 13 — "Indian **** stories" · Remember, Bid wisely...!' style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:0.85rem;outline:none;">
+      </div>
+
+      <!-- SLOTS -->
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);letter-spacing:2px;margin-bottom:12px;">// SLOT DETAILS</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        ${[1,2,3,4,5].map(i => `
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT ${i}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div>
+              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label>
+              <input id="cms-input-ep-slot${i}" type="text" placeholder="EP.47 · SCENE 0${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
+            </div>
+            <div>
+              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label>
+              <input id="cms-input-title-slot${i}" type="text" placeholder="Slot ${i} Title" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
+            </div>
+            <div>
+              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label>
+              <input id="cms-input-ts-slot${i}" type="text" placeholder="0:00 – 0:15" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
+            </div>
+          </div>
+        </div>`).join('')}
+      </div>
+
+      <button onclick="saveCMSContent()" style="background:var(--cyan);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:12px 28px;border-radius:6px;cursor:pointer;width:100%;">SAVE ALL CHANGES → bhaam.in UPDATES INSTANTLY</button>
+    </div>
+
     <!-- DEADLINE MANAGER -->
     <div class="section-title" style="margin-bottom:16px;">⏳ BIDDING <span>DEADLINE</span></div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:32px;">
@@ -342,9 +401,61 @@
   let topBidPerSlot = {};
 
   async function initDashboard() {
+    await loadCMSValues();
     await loadDeadline();
     await loadData();
     subscribeRealtime();
+  }
+
+  // ─── CMS FUNCTIONS ───
+  const CMS_FIELDS = [
+    { input: 'cms-input-subs',        key: 'cms-subs' },
+    { input: 'cms-input-views',       key: 'cms-views' },
+    { input: 'cms-input-indian',      key: 'cms-indian' },
+    { input: 'cms-input-age',         key: 'cms-age' },
+    { input: 'cms-input-episode-sub', key: 'cms-episode-sub-text' },
+    { input: 'cms-input-ep-slot1',    key: 'cms-ep-slot1' },
+    { input: 'cms-input-ep-slot2',    key: 'cms-ep-slot2' },
+    { input: 'cms-input-ep-slot3',    key: 'cms-ep-slot3' },
+    { input: 'cms-input-ep-slot4',    key: 'cms-ep-slot4' },
+    { input: 'cms-input-ep-slot5',    key: 'cms-ep-slot5' },
+    { input: 'cms-input-title-slot1', key: 'cms-title-slot1' },
+    { input: 'cms-input-title-slot2', key: 'cms-title-slot2' },
+    { input: 'cms-input-title-slot3', key: 'cms-title-slot3' },
+    { input: 'cms-input-title-slot4', key: 'cms-title-slot4' },
+    { input: 'cms-input-title-slot5', key: 'cms-title-slot5' },
+    { input: 'cms-input-ts-slot1',    key: 'cms-ts-slot1' },
+    { input: 'cms-input-ts-slot2',    key: 'cms-ts-slot2' },
+    { input: 'cms-input-ts-slot3',    key: 'cms-ts-slot3' },
+    { input: 'cms-input-ts-slot4',    key: 'cms-ts-slot4' },
+    { input: 'cms-input-ts-slot5',    key: 'cms-ts-slot5' },
+  ];
+
+  async function loadCMSValues() {
+    const { data } = await db.from('settings').select('key, value').like('key', 'cms_%');
+    if (!data) return;
+    data.forEach(({ key, value }) => {
+      const field = CMS_FIELDS.find(f => f.key === key);
+      if (field) {
+        const el = document.getElementById(field.input);
+        if (el) el.value = value;
+      }
+    });
+  }
+
+  async function saveCMSContent() {
+    const updates = CMS_FIELDS
+      .map(f => {
+        const el = document.getElementById(f.input);
+        return el && el.value.trim() ? { key: f.key, value: el.value.trim() } : null;
+      })
+      .filter(Boolean);
+
+    if (updates.length === 0) { showToast('Nothing to save!', true); return; }
+
+    const { error } = await db.from('settings').upsert(updates);
+    if (error) { showToast('Failed: ' + error.message, true); return; }
+    showToast('✅ Site content updated! bhaam.in reflects changes instantly.');
   }
 
   // ─── DEADLINE MANAGER ───
