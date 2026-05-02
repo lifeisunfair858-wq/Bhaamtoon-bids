@@ -245,24 +245,57 @@
       <!-- SLOTS -->
       <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);letter-spacing:2px;margin-bottom:12px;">// SLOT DETAILS</div>
       <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
-        ${[1,2,3,4,5].map(i => `
+
+        <!-- SLOT 1 -->
         <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
-          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT ${i}</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT 1</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-            <div>
-              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label>
-              <input id="cms-input-ep-slot${i}" type="text" placeholder="EP.47 · SCENE 0${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
-            </div>
-            <div>
-              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label>
-              <input id="cms-input-title-slot${i}" type="text" placeholder="Slot ${i} Title" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
-            </div>
-            <div>
-              <label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label>
-              <input id="cms-input-ts-slot${i}" type="text" placeholder="0:00 – 0:15" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;">
-            </div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label><input id="cms-input-ep-slot1" type="text" placeholder="EP.47 · SCENE 01" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label><input id="cms-input-title-slot1" type="text" placeholder="Opening Background Banner" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label><input id="cms-input-ts-slot1" type="text" placeholder="0:00 – 0:15" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
           </div>
-        </div>`).join('')}
+        </div>
+
+        <!-- SLOT 2 -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT 2</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label><input id="cms-input-ep-slot2" type="text" placeholder="EP.47 · SCENE 03" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label><input id="cms-input-title-slot2" type="text" placeholder="Office Wall Poster" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label><input id="cms-input-ts-slot2" type="text" placeholder="0:45 – 1:20" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+          </div>
+        </div>
+
+        <!-- SLOT 3 -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT 3</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label><input id="cms-input-ep-slot3" type="text" placeholder="EP.47 · SCENE 05" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label><input id="cms-input-title-slot3" type="text" placeholder="Phone Screen Cameo" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label><input id="cms-input-ts-slot3" type="text" placeholder="2:10 – 2:30" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+          </div>
+        </div>
+
+        <!-- SLOT 4 -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT 4</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label><input id="cms-input-ep-slot4" type="text" placeholder="EP.47 · SCENE 07" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label><input id="cms-input-title-slot4" type="text" placeholder="Shop Signboard" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label><input id="cms-input-ts-slot4" type="text" placeholder="3:00 – 3:40" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+          </div>
+        </div>
+
+        <!-- SLOT 5 -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-bottom:8px;">SLOT 5</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">EPISODE TAG</label><input id="cms-input-ep-slot5" type="text" placeholder="EP.47 · END CARD" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TITLE</label><input id="cms-input-title-slot5" type="text" placeholder="End Card Shoutout" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+            <div><label style="font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);display:block;margin-bottom:3px;">TIMESTAMP</label><input id="cms-input-ts-slot5" type="text" placeholder="4:50 – 5:00" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:0.8rem;outline:none;"></div>
+          </div>
+        </div>
+
       </div>
 
       <button onclick="saveCMSContent()" style="background:var(--cyan);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:12px 28px;border-radius:6px;cursor:pointer;width:100%;">SAVE ALL CHANGES → bhaam.in UPDATES INSTANTLY</button>
