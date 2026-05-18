@@ -953,6 +953,23 @@
     return data[0].email !== currentEmail;
   }
 
+  const BAD_WORDS = [
+    // Hindi/Hinglish
+    'chut','chudakkar','chudak','chuda','lund','lauda','gaand','gand','bsdk','bhosdi','bhosdike',
+    'madarchod','madarc hod','maderchod','behenchod','bc','mc','randi','rand','harami','haraami',
+    'sala','saala','behen ke lode','bkl','chodu','chodna','chodne','lavde','lavda','bhosad',
+    'kutte','kamine','kamina','gandu','ganду','hijda','hijra','burr','bur',
+    // English
+    'fuck','fucker','fucking','fuck you','shit','bitch','asshole','bastard','cunt','dick',
+    'pussy','cock','nigger','nigga','whore','slut','retard','faggot','porn','sex','nude',
+    'naked','rape','molest','pedo','pedophile','ass','arse'
+  ];
+
+  function containsBadWord(text) {
+    const lower = text.toLowerCase().replace(/\s+/g, '');
+    return BAD_WORDS.some(w => lower.includes(w.replace(/\s+/g,'')));
+  }
+
   function showConfirm() {
     const name = document.getElementById('bidName').value.trim();
     const amount = parseInt(document.getElementById('bidAmount').value);
@@ -960,10 +977,12 @@
     const top = topBids[currentSlot] || 0;
 
     if (!name) { showToast('Please enter your name', true); return; }
+    if (containsBadWord(name)) { showToast('❌ Inappropriate name not allowed', true); return; }
     if (!amount || amount <= 0) { showToast('Please enter a valid amount', true); return; }
     if (amount > 9999) { showToast('❌ Max bid is ₹9,999', true); return; }
     if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
     if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top + 50).toLocaleString('en-IN')}`, true); return; }
+    if (note && containsBadWord(note)) { showToast('❌ Inappropriate content in "What to Show"', true); return; }
 
     // Flag suspiciously high bids (5x or more above current top)
     if (top > 0 && amount >= top * 5) { triggerSusFlash(); }
@@ -1046,9 +1065,11 @@
     const note = document.getElementById('bidNote').value.trim();
     
     if (!name) { showToast('Please enter your name', true); return; }
+    if (containsBadWord(name)) { showToast('❌ Inappropriate name not allowed', true); return; }
     if (!amount || amount<=0) { showToast('Please enter a valid amount', true); return; }
     if (amount > 9999) { showToast('❌ Max bid is ₹9,999', true); return; }
     if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
+    if (note && containsBadWord(note)) { showToast('❌ Inappropriate content in "What to Show"', true); return; }
     
     const top = topBids[currentSlot] || 0;
     if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}`, true); return; }
