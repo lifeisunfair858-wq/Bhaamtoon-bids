@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BHAAMTOON — Admin Intelligence Dashboard</title>
+<title>BHAAMTOON — Complete Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -66,11 +66,13 @@
     padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 100;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; }
   .logo span { color: var(--cyan); }
   .logo em { color: var(--orange); font-style: normal; }
-  .header-right { display: flex; gap: 12px; align-items: center; }
+  .header-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   .live-dot { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
   .logout-btn {
@@ -82,16 +84,123 @@
   .main { padding: 28px 24px; max-width: 1600px; margin: 0 auto; }
 
   /* Stats */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
   .stat-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; margin-bottom: 8px; }
   .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; line-height: 1; }
   .stat-value.cyan { color: var(--cyan); }
   .stat-value.yellow { color: var(--yellow); }
   .stat-value.orange { color: var(--orange); }
+  .stat-value.green { color: var(--green); }
   .stat-value.red { color: var(--red); }
 
-  /* Suspicious Users Section */
+  /* Winners Grid */
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 3px; margin: 24px 0 16px; }
+  .section-title span { color: var(--cyan); }
+  
+  .winners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .winner-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; position: relative; }
+  .winner-card.has-winner { border-color: rgba(0,230,118,0.3); }
+  .winner-card.no-bids { opacity: 0.6; }
+  .winner-slot { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--cyan); letter-spacing: 2px; }
+  .winner-scene { font-weight: 800; font-size: 0.9rem; margin: 6px 0 12px; }
+  .winner-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--green); }
+  .winner-email { font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; word-break: break-all; }
+  .winner-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--yellow); margin-top: 8px; }
+  .winner-crown { position: absolute; top: 12px; right: 14px; font-size: 1.4rem; }
+
+  /* CMS Section */
+  .cms-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .cms-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .cms-field {
+    display: flex;
+    flex-direction: column;
+  }
+  .cms-field label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .cms-field input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+  .slot-cms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .slot-cms-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+  }
+  .slot-cms-item .slot-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--cyan);
+    margin-bottom: 8px;
+  }
+  .slot-cms-item input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-bottom: 6px;
+  }
+
+  /* Deadline Section */
+  .deadline-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .deadline-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--cyan);
+    margin: 10px 0;
+  }
+  .deadline-input-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .deadline-input-group input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+
+  /* Suspicious Section */
   .suspicious-section {
     background: rgba(255,23,68,0.08);
     border: 1px solid rgba(255,23,68,0.3);
@@ -101,7 +210,7 @@
   }
   .suspicious-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     letter-spacing: 2px;
     color: var(--red);
     margin-bottom: 16px;
@@ -115,7 +224,7 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -125,18 +234,37 @@
   }
   .suspicious-device {
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--red);
   }
   .suspicious-emails {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--muted);
     margin-top: 4px;
   }
 
-  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 3px; margin: 24px 0 16px; }
-  .section-title span { color: var(--cyan); }
+  /* Actions Bar */
+  .actions-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .action-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    background: var(--cyan);
+    color: #000;
+  }
+  .action-btn.danger { background: var(--red); color: #fff; }
+  .action-btn.warning { background: var(--orange); color: #000; }
+  .action-btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
 
+  /* Filter Bar */
   .filter-bar {
     display: flex;
     gap: 10px;
@@ -156,46 +284,41 @@
   }
   .filter-bar select:focus, .filter-bar input:focus { border-color: var(--cyan); }
 
+  /* Table */
   .table-wrap { overflow-x: auto; margin-bottom: 40px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 1300px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.72rem; min-width: 1400px; }
   thead tr { background: var(--card); border-bottom: 2px solid var(--border); }
   th {
     font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     color: var(--muted);
-    padding: 12px 8px;
+    padding: 10px 6px;
     text-align: left;
-    cursor: pointer;
   }
-  th:hover { color: var(--cyan); }
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
   tbody tr:hover { background: rgba(0,245,212,0.05); }
   tbody tr.suspicious { background: rgba(255,23,68,0.05); border-left: 3px solid var(--red); }
   tbody tr.top-bid { background: rgba(0,230,118,0.04); }
-  td { padding: 10px 8px; vertical-align: middle; }
-  .td-slot { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--cyan); }
+  td { padding: 8px 6px; vertical-align: middle; }
+  .td-slot { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--cyan); }
   .td-name { font-weight: 700; }
-  .td-email { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; }
-  .td-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--yellow); }
+  .td-email { font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; max-width: 180px; word-break: break-all; }
+  .td-amount { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; color: var(--yellow); }
   .td-amount.top { color: var(--green); }
-  .crown-badge { background: var(--green); color: #000; font-size: 0.55rem; padding: 2px 6px; border-radius: 2px; margin-left: 6px; }
-  .suspicious-badge-icon { background: var(--red); color: #fff; font-size: 0.55rem; padding: 2px 6px; border-radius: 2px; margin-left: 6px; }
-
-  .action-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
+  .crown-badge { background: var(--green); color: #000; font-size: 0.5rem; padding: 2px 5px; border-radius: 2px; margin-left: 5px; }
+  .suspicious-badge-icon { background: var(--red); color: #fff; font-size: 0.5rem; padding: 2px 5px; border-radius: 2px; }
+  .delete-btn, .email-btn {
+    background: none;
     border: none;
-    background: var(--cyan);
-    color: #000;
-    margin-right: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border-radius: 4px;
   }
-  .action-btn.danger { background: var(--red); color: #fff; }
-  .action-btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .delete-btn { color: var(--red); }
+  .email-btn { color: var(--cyan); }
 
-  /* MODAL */
+  /* Modal */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -212,11 +335,11 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    max-width: 700px;
+    max-width: 750px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
-    padding: 28px;
+    padding: 24px;
   }
   .modal-header {
     display: flex;
@@ -226,53 +349,43 @@
     border-bottom: 1px solid var(--border);
     padding-bottom: 12px;
   }
-  .modal-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
+  .modal-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; }
   .modal-header h2 span { color: var(--cyan); }
   .modal-close {
     background: none;
     border: none;
     color: var(--muted);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     cursor: pointer;
   }
   .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 12px;
+    margin-bottom: 20px;
   }
   .info-item {
     background: rgba(255,255,255,0.02);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 6px;
+    padding: 10px;
   }
   .info-label {
     font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     color: var(--muted);
     letter-spacing: 1px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .info-value {
-    font-size: 0.85rem;
-    word-break: break-all;
-    font-weight: 600;
-  }
-  .info-value.small { font-size: 0.7rem; font-family: 'Space Mono', monospace; }
-  .flag-list { margin-top: 20px; }
-  .flag-item {
-    background: rgba(255,23,68,0.1);
-    border-left: 3px solid var(--red);
-    padding: 10px;
-    margin-bottom: 8px;
     font-size: 0.75rem;
+    word-break: break-all;
   }
   .device-group {
     background: rgba(0,245,212,0.05);
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 16px;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 12px;
   }
 
   .toast {
@@ -283,7 +396,7 @@
     background: var(--cyan);
     color: #000;
     font-family: 'Space Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     padding: 10px 20px;
     border-radius: 6px;
     z-index: 999;
@@ -291,6 +404,12 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { background: var(--orange); }
+
+  @media (max-width: 700px) {
+    .main { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .info-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -298,7 +417,7 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <div class="login-logo"><span>BHAAM</span><em>TOON</em></div>
-    <div class="login-sub">// INTELLIGENCE DASHBOARD</div>
+    <div class="login-sub">// COMPLETE ADMIN</div>
     <input type="password" id="passwordInput" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
     <button class="login-btn" onclick="login()">ENTER →</button>
     <div class="login-error" id="loginError">Wrong password!</div>
@@ -308,41 +427,88 @@
 <div class="dashboard" id="dashboard">
 
   <header>
-    <div class="logo"><span>BHAAM</span><em>TOON</em> <span style="font-size:0.8rem; color:var(--cyan)">INTEL</span></div>
+    <div class="logo"><span>BHAAM</span><em>TOON</em> <span style="font-size:0.8rem; color:var(--cyan)">COMPLETE</span></div>
     <div class="header-right">
+      <div class="live-dot"></div>
       <button class="logout-btn" onclick="logout()">LOGOUT</button>
     </div>
   </header>
 
   <div class="main">
 
-    <!-- STATS -->
+    <!-- STATS CARDS -->
     <div class="stats-grid" id="statsGrid">
       <div class="stat-card"><div class="stat-label">TOTAL BIDS</div><div class="stat-value cyan" id="statTotal">—</div></div>
       <div class="stat-card"><div class="stat-label">UNIQUE USERS</div><div class="stat-value yellow" id="statUsers">—</div></div>
       <div class="stat-card"><div class="stat-label">SUSPICIOUS</div><div class="stat-value red" id="statSuspicious">—</div></div>
-      <div class="stat-card"><div class="stat-label">DEVICES</div><div class="stat-value cyan" id="statDevices">—</div></div>
       <div class="stat-card"><div class="stat-label">TOTAL REVENUE</div><div class="stat-value orange" id="statRevenue">—</div></div>
+      <div class="stat-card"><div class="stat-label">SLOTS W/ BIDS</div><div class="stat-value green" id="statSlots">—</div></div>
+      <div class="stat-card"><div class="stat-label">TOP BID</div><div class="stat-value cyan" id="statTopBid">—</div></div>
     </div>
 
-    <!-- SUSPICIOUS DEVICE GROUPS -->
+    <!-- WINNERS SECTION -->
+    <div class="section-title">🏆 CURRENT <span>WINNERS</span></div>
+    <div class="winners-grid" id="winnersGrid">
+      <div style="color:var(--muted);">Loading...</div>
+    </div>
+
+    <!-- CMS CONTENT MANAGER -->
+    <div class="cms-section">
+      <div class="section-title" style="margin-top:0;">✏️ SITE <span>CONTENT</span></div>
+      <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:16px;">Changes apply instantly to bhaam.in</div>
+      
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);margin-bottom:10px;">📊 STATS BAR</div>
+      <div class="cms-group">
+        <div class="cms-field"><label>SUBSCRIBERS</label><input id="cms-subs" placeholder="97K+"></div>
+        <div class="cms-field"><label>MONTHLY VIEWS</label><input id="cms-views" placeholder="1M+"></div>
+        <div class="cms-field"><label>INDIAN AUDIENCE %</label><input id="cms-indian" placeholder="82%"></div>
+        <div class="cms-field"><label>CORE AGE GROUP</label><input id="cms-age" placeholder="18–34"></div>
+      </div>
+
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);margin:16px 0 10px;">🎬 EPISODE INFO</div>
+      <div class="cms-field" style="margin-bottom:16px;"><label>EPISODE SUBTITLE</label><input id="cms-episode-sub-text" placeholder="// Video 13 — Indian stories"></div>
+
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--orange);margin:16px 0 10px;">🎞️ SLOT DETAILS</div>
+      <div class="slot-cms-grid">
+        <div class="slot-cms-item"><div class="slot-label">SLOT 1</div><input id="cms-ep-slot1" placeholder="EP.47 · SCENE 01"><input id="cms-title-slot1" placeholder="Opening Banner"><input id="cms-ts-slot1" placeholder="0:00 – 0:15"></div>
+        <div class="slot-cms-item"><div class="slot-label">SLOT 2</div><input id="cms-ep-slot2" placeholder="EP.47 · SCENE 03"><input id="cms-title-slot2" placeholder="Office Wall"><input id="cms-ts-slot2" placeholder="0:45 – 1:20"></div>
+        <div class="slot-cms-item"><div class="slot-label">SLOT 3</div><input id="cms-ep-slot3" placeholder="EP.47 · SCENE 05"><input id="cms-title-slot3" placeholder="Phone Screen"><input id="cms-ts-slot3" placeholder="2:10 – 2:30"></div>
+        <div class="slot-cms-item"><div class="slot-label">SLOT 4</div><input id="cms-ep-slot4" placeholder="EP.47 · SCENE 07"><input id="cms-title-slot4" placeholder="Shop Sign"><input id="cms-ts-slot4" placeholder="3:00 – 3:40"></div>
+        <div class="slot-cms-item"><div class="slot-label">SLOT 5</div><input id="cms-ep-slot5" placeholder="EP.47 · END CARD"><input id="cms-title-slot5" placeholder="End Card"><input id="cms-ts-slot5" placeholder="4:50 – 5:00"></div>
+      </div>
+
+      <button class="action-btn" onclick="saveCMS()" style="width:100%;">💾 SAVE ALL CHANGES</button>
+    </div>
+
+    <!-- DEADLINE MANAGER -->
+    <div class="deadline-section">
+      <div class="section-title" style="margin-top:0;">⏳ BIDDING <span>DEADLINE</span></div>
+      <div class="deadline-display" id="deadlineDisplay">Loading...</div>
+      <div class="deadline-input-group">
+        <input type="datetime-local" id="deadlineInput">
+        <button class="action-btn" onclick="updateDeadline()">UPDATE DEADLINE</button>
+      </div>
+    </div>
+
+    <!-- SUSPICIOUS DEVICE CLUSTERS -->
     <div class="suspicious-section" id="suspiciousSection" style="display:none;">
       <div class="suspicious-title">🚨 SUSPICIOUS DEVICE CLUSTERS</div>
       <div class="suspicious-grid" id="suspiciousGrid"></div>
-      <div style="font-size:0.65rem; color:var(--muted); margin-top:12px;">Click any cluster to see all bids from same device fingerprint</div>
     </div>
 
-    <!-- ACTIONS -->
+    <!-- ACTIONS BAR -->
     <div class="section-title">⚡ <span>ACTIONS</span></div>
-    <div style="margin-bottom: 20px;">
-      <button class="action-btn" onclick="exportAllCSV()">📥 EXPORT ALL BIDS</button>
-      <button class="action-btn" onclick="exportIntelligenceCSV()">🕵️ EXPORT USER INTEL</button>
+    <div class="actions-bar">
+      <button class="action-btn" onclick="exportAllCSV()">📥 ALL BIDS CSV</button>
+      <button class="action-btn" onclick="exportWinnersCSV()">🏆 WINNERS CSV</button>
+      <button class="action-btn secondary" onclick="exportIntelCSV()">🕵️ INTEL CSV</button>
       <button class="action-btn secondary" onclick="loadData()">↻ REFRESH</button>
-      <button class="action-btn danger" onclick="banSelected()">🚫 BAN SELECTED</button>
+      <button class="action-btn warning" onclick="clearSlot()">🗑 CLEAR SLOT</button>
+      <button class="action-btn danger" onclick="clearAllBids()">⚠️ CLEAR ALL</button>
     </div>
 
     <!-- ALL BIDS TABLE -->
-    <div class="section-title">📋 <span>ALL BIDS</span> <span style="font-size:0.7rem;">(click any row for full user intelligence)</span></div>
+    <div class="section-title">📋 ALL <span>BIDS</span></div>
     <div class="filter-bar">
       <select id="filterSlot" onchange="renderTable()">
         <option value="all">All Slots</option>
@@ -357,9 +523,7 @@
         <option value="amount_desc">Highest Bid First</option>
       </select>
       <input type="text" id="filterSearch" placeholder="Search name, email, IP..." oninput="renderTable()">
-      <label style="display:flex;align-items:center;gap:6px;">
-        <input type="checkbox" id="showSuspiciousOnly" onchange="renderTable()"> 🚨 Show suspicious only
-      </label>
+      <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="showSuspiciousOnly" onchange="renderTable()"> 🚨 Suspicious only</label>
       <span class="total-count" id="totalCount"></span>
     </div>
 
@@ -367,20 +531,20 @@
       <table>
         <thead>
           <tr>
-            <th style="width:30px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
             <th>SLOT</th>
             <th>NAME</th>
             <th>EMAIL</th>
             <th>BID (₹)</th>
-            <th>IP ADDRESS</th>
-            <th>DEVICE</th>
+            <th>IP</th>
+            <th>DEVICE FP</th>
             <th>LOCATION</th>
             <th>TIME</th>
             <th>FLAGS</th>
+            <th>ACTIONS</th>
           </tr>
         </thead>
         <tbody id="bidsTableBody">
-          <tr><td colspan="10" class="empty-table" style="text-align:center;">Loading intelligence...</td></tr>
+          <tr><td colspan="10" style="text-align:center;padding:40px;">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -388,16 +552,14 @@
   </div>
 </div>
 
-<!-- USER INTELLIGENCE MODAL -->
+<!-- USER MODAL -->
 <div class="modal-overlay" id="userModal">
   <div class="user-modal">
     <div class="modal-header">
       <h2>🕵️ USER <span>INTELLIGENCE</span></h2>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div id="modalContent">
-      <div style="text-align:center; padding:40px;">Loading...</div>
-    </div>
+    <div id="modalContent"></div>
   </div>
 </div>
 
@@ -409,6 +571,11 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld2xiY2pmZXNqa2x6bWRpc2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjIyOTYsImV4cCI6MjA5MDEzODI5Nn0.L4ixMgw2368mMD3rq9vxbgLrmfrl-JiFaa6TjM6hAQc';
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const EJS_SERVICE = 'service_uh3qili';
+  const EJS_TEMPLATE = 'template_21vgjni';
+  const EJS_KEY = '-CU4EmFLT7vUHmJtM';
+  emailjs.init(EJS_KEY);
 
   const SLOT_NAMES = {
     slot1: 'Scene 01 — Opening Banner',
@@ -422,7 +589,6 @@
   let topBidPerSlot = {};
   let deviceGroups = {};
   let suspiciousDevices = [];
-  let selectedBids = new Set();
 
   function login() {
     const pw = document.getElementById('passwordInput').value;
@@ -442,23 +608,62 @@
   }
 
   async function initDashboard() {
+    await loadCMSValues();
+    await loadDeadline();
     await loadData();
     subscribeRealtime();
   }
 
+  async function loadCMSValues() {
+    const { data } = await db.from('settings').select('key, value').like('key', 'cms_%');
+    if (!data) return;
+    data.forEach(({ key, value }) => {
+      const el = document.getElementById(key);
+      if (el) el.value = value;
+    });
+  }
+
+  async function saveCMS() {
+    const cmsKeys = ['cms-subs', 'cms-views', 'cms-indian', 'cms-age', 'cms-episode-sub-text',
+      'cms-ep-slot1', 'cms-title-slot1', 'cms-ts-slot1',
+      'cms-ep-slot2', 'cms-title-slot2', 'cms-ts-slot2',
+      'cms-ep-slot3', 'cms-title-slot3', 'cms-ts-slot3',
+      'cms-ep-slot4', 'cms-title-slot4', 'cms-ts-slot4',
+      'cms-ep-slot5', 'cms-title-slot5', 'cms-ts-slot5'];
+    
+    const updates = cmsKeys.map(key => ({ key, value: document.getElementById(key)?.value || '' }));
+    const { error } = await db.from('settings').upsert(updates);
+    if (error) showToast('Save failed: ' + error.message, true);
+    else showToast('✅ Site content updated!');
+  }
+
+  async function loadDeadline() {
+    const { data } = await db.from('settings').select('value').eq('key', 'deadline').single();
+    if (data && data.value) {
+      const d = new Date(data.value);
+      document.getElementById('deadlineDisplay').textContent = d.toLocaleString('en-IN');
+      const offset = d.getTime() - (d.getTimezoneOffset() * 60000);
+      document.getElementById('deadlineInput').value = new Date(offset).toISOString().slice(0,16);
+    }
+  }
+
+  async function updateDeadline() {
+    const val = document.getElementById('deadlineInput').value;
+    if (!val) { showToast('Pick a date!', true); return; }
+    const isoIST = new Date(val).toISOString();
+    const { error } = await db.from('settings').upsert({ key: 'deadline', value: isoIST });
+    if (error) showToast('Failed: ' + error.message, true);
+    else { showToast('✅ Deadline updated!'); loadDeadline(); }
+  }
+
   async function loadData() {
-    const { data, error } = await db
-      .from('bids')
-      .select('*')
-      .order('created_at', { ascending: false });
-
+    const { data, error } = await db.from('bids').select('*').order('created_at', { ascending: false });
     if (error) { showToast('Error loading bids!', true); return; }
-
     allBids = data || [];
     computeTopBids();
-    analyzeDeviceFingerprints();
+    analyzeDevices();
     renderStats();
-    renderSuspiciousSection();
+    renderWinners();
     renderTable();
   }
 
@@ -471,70 +676,73 @@
     }
   }
 
-  function analyzeDeviceFingerprints() {
+  function analyzeDevices() {
     deviceGroups = {};
     for (const bid of allBids) {
       const fp = bid.device_fingerprint || 'unknown';
       if (!deviceGroups[fp]) deviceGroups[fp] = [];
       deviceGroups[fp].push(bid);
     }
-    
-    // Find suspicious devices (multiple emails from same device, or suspicious names)
     suspiciousDevices = [];
     for (const [fp, bids] of Object.entries(deviceGroups)) {
       const uniqueEmails = new Set(bids.map(b => b.email).filter(e => e));
-      const BAD_WORDS = [
-        'chut','chudakkar','chudak','chuda','lund','lauda','gaand','gand','bsdk','bhosdi','bhosdike',
-        'madarchod','maderchod','behenchod','bc','mc','randi','rand','harami','haraami',
-        'sala','saala','bkl','chodu','chodna','lavde','lavda','bhosad',
-        'kutte','kamine','kamina','gandu','hijda','hijra','burr','bur',
-        'fuck','fucker','fucking','shit','bitch','asshole','bastard','cunt','dick',
-        'pussy','cock','nigger','nigga','whore','slut','retard','faggot','porn','sex','nude',
-        'naked','rape','molest','pedo','pedophile','ass','arse'
-      ];
       const hasBadNames = bids.some(b => {
-        const name = (b.bidder_name || '').toLowerCase().replace(/\s+/g,'');
-        const note = (b.bid_note || '').toLowerCase().replace(/\s+/g,'');
-        return BAD_WORDS.some(w => name.includes(w.replace(/\s+/g,'')) || note.includes(w.replace(/\s+/g,'')));
+        const name = (b.bidder_name || '').toLowerCase();
+        return ['chudakkar', 'chut', 'lund', 'rand', 'chodu'].some(bad => name.includes(bad));
       });
-      const hasSuspiciousAmounts = bids.some(b => b.bid_amount > 8000);
-      
+      const hasSuspiciousAmounts = bids.some(b => b.bid_amount > 50000);
       if (uniqueEmails.size > 1 || hasBadNames || hasSuspiciousAmounts) {
-        suspiciousDevices.push({ fingerprint: fp, bids, uniqueEmails: uniqueEmails.size, hasBadNames, hasSuspiciousAmounts });
+        suspiciousDevices.push({ fingerprint: fp, bids, uniqueEmails: uniqueEmails.size });
       }
+    }
+    
+    const section = document.getElementById('suspiciousSection');
+    const grid = document.getElementById('suspiciousGrid');
+    if (suspiciousDevices.length === 0) {
+      section.style.display = 'none';
+    } else {
+      section.style.display = 'block';
+      grid.innerHTML = suspiciousDevices.map(dev => `
+        <div class="suspicious-badge" onclick="showDeviceGroup('${dev.fingerprint}')">
+          <div class="suspicious-device">🔍 ${dev.fingerprint.substring(0, 20)}...</div>
+          <div class="suspicious-emails">📧 ${dev.uniqueEmails} emails | ${dev.bids.length} bids</div>
+        </div>
+      `).join('');
     }
   }
 
   function renderStats() {
     const uniqueUsers = new Set(allBids.map(b => b.email || b.device_fingerprint)).size;
     const totalRevenue = Object.values(topBidPerSlot).reduce((sum, b) => sum + b.bid_amount, 0);
-    const uniqueDevices = Object.keys(deviceGroups).length;
+    const slotsWithBids = Object.keys(topBidPerSlot).length;
+    const topBid = allBids.reduce((max, b) => b.bid_amount > max ? b.bid_amount : max, 0);
     
     document.getElementById('statTotal').textContent = allBids.length;
     document.getElementById('statUsers').textContent = uniqueUsers;
     document.getElementById('statSuspicious').textContent = suspiciousDevices.length;
-    document.getElementById('statDevices').textContent = uniqueDevices;
     document.getElementById('statRevenue').textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+    document.getElementById('statSlots').textContent = slotsWithBids + '/5';
+    document.getElementById('statTopBid').textContent = topBid > 0 ? '₹' + topBid.toLocaleString('en-IN') : '—';
   }
 
-  function renderSuspiciousSection() {
-    const section = document.getElementById('suspiciousSection');
-    const grid = document.getElementById('suspiciousGrid');
-    
-    if (suspiciousDevices.length === 0) {
-      section.style.display = 'none';
-      return;
-    }
-    
-    section.style.display = 'block';
-    grid.innerHTML = suspiciousDevices.map(dev => `
-      <div class="suspicious-badge" onclick="showDeviceGroup('${dev.fingerprint}')">
-        <div class="suspicious-device">🔍 ${dev.fingerprint.substring(0, 20)}...</div>
-        <div class="suspicious-emails">📧 ${dev.uniqueEmails} emails | ${dev.bids.length} bids</div>
-        ${dev.hasBadNames ? '<div style="color:#ff6b2b;font-size:0.6rem;">⚠️ Bad name detected</div>' : ''}
-        ${dev.hasSuspiciousAmounts ? '<div style="color:#ff6b2b;font-size:0.6rem;">💰 Suspicious amount</div>' : ''}
-      </div>
-    `).join('');
+  function renderWinners() {
+    const grid = document.getElementById('winnersGrid');
+    grid.innerHTML = Object.entries(SLOT_NAMES).map(([slotId, name]) => {
+      const winner = topBidPerSlot[slotId];
+      if (winner) {
+        return `
+          <div class="winner-card has-winner">
+            <span class="winner-crown">👑</span>
+            <div class="winner-slot">${slotId.toUpperCase()}</div>
+            <div class="winner-scene">${name}</div>
+            <div class="winner-name">${escapeHtml(winner.bidder_name)}</div>
+            <div class="winner-email">📧 ${escapeHtml(winner.email || '—')}</div>
+            <div class="winner-amount">₹${winner.bid_amount.toLocaleString('en-IN')}</div>
+          </div>`;
+      } else {
+        return `<div class="winner-card no-bids"><div class="winner-slot">${slotId.toUpperCase()}</div><div class="winner-scene">${name}</div><div class="winner-name">No bids yet</div></div>`;
+      }
+    }).join('');
   }
 
   function renderTable() {
@@ -546,7 +754,7 @@
     let filtered = allBids.filter(b => {
       if (slotFilter !== 'all' && b.slot_id !== slotFilter) return false;
       if (search) {
-        const nameMatch = b.bidder_name.toLowerCase().includes(search);
+        const nameMatch = (b.bidder_name || '').toLowerCase().includes(search);
         const emailMatch = (b.email || '').toLowerCase().includes(search);
         const ipMatch = (b.ip_address || '').toLowerCase().includes(search);
         if (!nameMatch && !emailMatch && !ipMatch) return false;
@@ -559,13 +767,13 @@
     });
 
     if (sortFilter === 'amount_desc') filtered.sort((a,b) => b.bid_amount - a.bid_amount);
-    else if (sortFilter === 'time_desc') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    else filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 
     document.getElementById('totalCount').textContent = filtered.length + ' bids';
 
     const tbody = document.getElementById('bidsTableBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" class="empty-table" style="text-align:center;">No bids found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No bids found</td></tr>';
       return;
     }
 
@@ -573,22 +781,23 @@
       const isTop = topBidPerSlot[b.slot_id]?.id === b.id;
       const isSuspicious = suspiciousDevices.some(dev => dev.fingerprint === b.device_fingerprint);
       const time = b.created_at ? new Date(b.created_at).toLocaleString('en-IN') : '—';
-      const ip = b.ip_address || '—';
-      const location = b.geo_location || '—';
-      const device = b.user_agent ? b.user_agent.split(' ')[0] + '...' : '—';
+      const fp = b.device_fingerprint ? b.device_fingerprint.substring(0, 12) + '...' : '—';
       
       return `
         <tr class="${isTop ? 'top-bid' : ''} ${isSuspicious ? 'suspicious' : ''}" onclick="showUserIntel('${b.id}')">
-          <td onclick="event.stopPropagation()"><input type="checkbox" class="bid-checkbox" value="${b.id}" ${selectedBids.has(b.id) ? 'checked' : ''} onchange="toggleSelectBid('${b.id}', this.checked)"></td>
           <td class="td-slot">${SLOT_NAMES[b.slot_id] || b.slot_id}</td>
           <td class="td-name">${escapeHtml(b.bidder_name)}${isTop ? '<span class="crown-badge">👑</span>' : ''}</td>
           <td class="td-email">${escapeHtml(b.email || '—')}</td>
           <td class="td-amount ${isTop ? 'top' : ''}">₹${b.bid_amount.toLocaleString('en-IN')}</td>
-          <td class="td-email"><span style="font-family:monospace;font-size:0.65rem;">${escapeHtml(ip)}</span></td>
-          <td class="td-email" style="font-size:0.65rem;">${escapeHtml(device)}</td>
-          <td class="td-email" style="font-size:0.65rem;">${escapeHtml(location)}</td>
-          <td class="td-email" style="font-size:0.65rem;">${time}</td>
-          <td>${isSuspicious ? '<span class="suspicious-badge-icon">🚨 SUSPECT</span>' : '—'}</td>
+          <td class="td-email">${escapeHtml(b.ip_address || '—')}</td>
+          <td class="td-email" style="font-size:0.55rem;">${fp}</td>
+          <td class="td-email">${escapeHtml(b.geo_location || '—')}</td>
+          <td class="td-email" style="font-size:0.6rem;">${time}</td>
+          <td>${isSuspicious ? '<span class="suspicious-badge-icon">🚨</span>' : '—'}</td>
+          <td onclick="event.stopPropagation()">
+            <button class="email-btn" onclick="sendManualEmail('${b.id}')" title="Send email">📧</button>
+            <button class="delete-btn" onclick="deleteBid('${b.id}')" title="Delete">🗑</button>
+          </td>
         </tr>
       `;
     }).join('');
@@ -598,89 +807,39 @@
     const bid = allBids.find(b => b.id === bidId);
     if (!bid) return;
     
-    // Find all bids from same device fingerprint
     const sameDevice = allBids.filter(b => b.device_fingerprint === bid.device_fingerprint);
     const sameEmail = allBids.filter(b => b.email === bid.email);
-    const suspicious = suspiciousDevices.some(dev => dev.fingerprint === bid.device_fingerprint);
     
     const modalContent = document.getElementById('modalContent');
     modalContent.innerHTML = `
       <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">📛 NAME</div>
-          <div class="info-value">${escapeHtml(bid.bidder_name)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">✉️ EMAIL</div>
-          <div class="info-value">${escapeHtml(bid.email || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">🔗 INSTAGRAM/LINK</div>
-          <div class="info-value small">${escapeHtml(bid.bid_link || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">💰 BID AMOUNT</div>
-          <div class="info-value" style="color:var(--yellow);">₹${bid.bid_amount.toLocaleString('en-IN')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">🌐 IP ADDRESS</div>
-          <div class="info-value small">${escapeHtml(bid.ip_address || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📍 GEO LOCATION</div>
-          <div class="info-value small">${escapeHtml(bid.geo_location || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">🖥️ USER AGENT</div>
-          <div class="info-value small" style="font-size:0.6rem; word-break:break-all;">${escapeHtml(bid.user_agent || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">🆔 DEVICE FINGERPRINT</div>
-          <div class="info-value small">${escapeHtml(bid.device_fingerprint || '—')}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📅 BID TIME</div>
-          <div class="info-value small">${bid.created_at ? new Date(bid.created_at).toLocaleString('en-IN') : '—'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📝 WHAT TO SHOW</div>
-          <div class="info-value small">${escapeHtml(bid.bid_note || '—')}</div>
-        </div>
+        <div class="info-item"><div class="info-label">📛 NAME</div><div class="info-value">${escapeHtml(bid.bidder_name)}</div></div>
+        <div class="info-item"><div class="info-label">✉️ EMAIL</div><div class="info-value">${escapeHtml(bid.email || '—')}</div></div>
+        <div class="info-item"><div class="info-label">🔗 INSTAGRAM</div><div class="info-value">${escapeHtml(bid.bid_link || '—')}</div></div>
+        <div class="info-item"><div class="info-label">💰 BID</div><div class="info-value">₹${bid.bid_amount.toLocaleString('en-IN')}</div></div>
+        <div class="info-item"><div class="info-label">🌐 IP</div><div class="info-value">${escapeHtml(bid.ip_address || '—')}</div></div>
+        <div class="info-item"><div class="info-label">📍 LOCATION</div><div class="info-value">${escapeHtml(bid.geo_location || '—')}</div></div>
+        <div class="info-item"><div class="info-label">🆔 DEVICE FP</div><div class="info-value" style="font-size:0.65rem;">${escapeHtml(bid.device_fingerprint || '—')}</div></div>
+        <div class="info-item"><div class="info-label">🖥️ USER AGENT</div><div class="info-value" style="font-size:0.6rem;">${escapeHtml(bid.user_agent || '—')}</div></div>
+        <div class="info-item"><div class="info-label">📱 SCREEN</div><div class="info-value">${escapeHtml(bid.screen_resolution || '—')}</div></div>
+        <div class="info-item"><div class="info-label">⏰ TIMEZONE</div><div class="info-value">${escapeHtml(bid.timezone || '—')}</div></div>
       </div>
       
       <div class="device-group">
-        <div class="info-label">🔗 SAME DEVICE (${sameDevice.length} bids from this fingerprint)</div>
-        ${sameDevice.map(b => `
-          <div style="font-size:0.7rem; padding:4px 0; border-bottom:1px solid var(--border);">
-            ${escapeHtml(b.bidder_name)} — ₹${b.bid_amount.toLocaleString('en-IN')} — ${b.email || 'no email'}
-            ${b.bidder_name.toLowerCase().includes('chudakkar') || b.bidder_name.toLowerCase().includes('chut') ? '<span style="color:var(--red);"> ⚠️ SPAM</span>' : ''}
-          </div>
-        `).join('')}
+        <div class="info-label">🔗 SAME DEVICE (${sameDevice.length} bids)</div>
+        ${sameDevice.map(b => `<div style="font-size:0.7rem; padding:5px 0; border-bottom:1px solid var(--border);">${escapeHtml(b.bidder_name)} — ₹${b.bid_amount.toLocaleString('en-IN')} — ${b.email || 'no email'}</div>`).join('')}
       </div>
       
       <div class="device-group" style="margin-top:12px;">
-        <div class="info-label">✉️ SAME EMAIL (${sameEmail.length} bids total)</div>
-        ${sameEmail.map(b => `
-          <div style="font-size:0.7rem; padding:4px 0; border-bottom:1px solid var(--border);">
-            ${escapeHtml(b.bidder_name)} — ₹${b.bid_amount.toLocaleString('en-IN')} — ${SLOT_NAMES[b.slot_id]}
-          </div>
-        `).join('')}
+        <div class="info-label">✉️ SAME EMAIL (${sameEmail.length} bids)</div>
+        ${sameEmail.map(b => `<div style="font-size:0.7rem; padding:5px 0; border-bottom:1px solid var(--border);">${escapeHtml(b.bidder_name)} — ${SLOT_NAMES[b.slot_id]}</div>`).join('')}
       </div>
-      
-      ${suspicious ? `
-        <div class="flag-list">
-          <div class="flag-item">🚨 This user is marked as SUSPICIOUS</div>
-          ${(() => { const BAD = ['chut','chudakkar','chudak','lund','lauda','gaand','bsdk','bhosdi','madarchod','maderchod','behenchod','randi','rand','harami','chodu','lavde','gandu','hijda','burr','bur','fuck','shit','bitch','cunt','dick','pussy','nigger','whore','slut','porn','rape','pedo']; const n = (bid.bidder_name||'').toLowerCase().replace(/\s+/g,''); return BAD.some(w=>n.includes(w)) ? '<div class="flag-item">⚠️ Contains inappropriate name</div>' : ''; })()}
-          ${bid.bid_amount > 8000 ? '<div class="flag-item">💰 Suspiciously high bid amount</div>' : ''}
-        </div>
-      ` : ''}
       
       <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="action-btn danger" onclick="banUser('${bid.email}', '${bid.device_fingerprint}')">🚫 BAN THIS USER (Email + Device)</button>
-        <button class="action-btn secondary" onclick="deleteBid('${bid.id}')">🗑 DELETE THIS BID</button>
+        <button class="action-btn danger" onclick="banUser('${bid.email}', '${bid.device_fingerprint}')">🚫 BAN</button>
+        <button class="action-btn warning" onclick="deleteBid('${bid.id}')">🗑 DELETE BID</button>
       </div>
     `;
-    
     document.getElementById('userModal').classList.add('open');
   }
 
@@ -689,115 +848,103 @@
     const modalContent = document.getElementById('modalContent');
     modalContent.innerHTML = `
       <div class="info-grid">
-        <div class="info-item" style="grid-column: span 2;">
-          <div class="info-label">🆔 DEVICE FINGERPRINT</div>
-          <div class="info-value small">${fingerprint}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📊 TOTAL BIDS</div>
-          <div class="info-value">${bids.length}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📧 UNIQUE EMAILS</div>
-          <div class="info-value">${new Set(bids.map(b => b.email)).size}</div>
-        </div>
+        <div class="info-item" style="grid-column:span 2;"><div class="info-label">🆔 DEVICE FINGERPRINT</div><div class="info-value">${fingerprint}</div></div>
+        <div class="info-item"><div class="info-label">📊 TOTAL BIDS</div><div class="info-value">${bids.length}</div></div>
+        <div class="info-item"><div class="info-label">📧 UNIQUE EMAILS</div><div class="info-value">${new Set(bids.map(b => b.email)).size}</div></div>
       </div>
-      <div class="info-label" style="margin-top:12px;">📋 ALL BIDS FROM THIS DEVICE</div>
-      ${bids.map(b => `
-        <div style="border-bottom:1px solid var(--border); padding:10px; cursor:pointer;" onclick="showUserIntel('${b.id}')">
-          <strong>${escapeHtml(b.bidder_name)}</strong> — ₹${b.bid_amount.toLocaleString('en-IN')}<br>
-          <span style="font-size:0.65rem; color:var(--muted);">${b.email || 'no email'} | ${SLOT_NAMES[b.slot_id]}</span>
-        </div>
-      `).join('')}
-      <button class="action-btn danger" style="margin-top:16px;" onclick="banDevice('${fingerprint}')">🚫 BAN ALL BIDS FROM THIS DEVICE</button>
+      <div class="info-label">📋 BIDS FROM THIS DEVICE</div>
+      ${bids.map(b => `<div style="border-bottom:1px solid var(--border); padding:8px; cursor:pointer;" onclick="showUserIntel('${b.id}')"><strong>${escapeHtml(b.bidder_name)}</strong> — ₹${b.bid_amount.toLocaleString('en-IN')}<br><span style="font-size:0.6rem;">${b.email || 'no email'}</span></div>`).join('')}
+      <button class="action-btn danger" style="margin-top:16px;" onclick="banDevice('${fingerprint}')">🚫 BAN DEVICE</button>
     `;
     document.getElementById('userModal').classList.add('open');
   }
 
-  function toggleSelectBid(id, checked) {
-    if (checked) selectedBids.add(id);
-    else selectedBids.delete(id);
-    updateSelectAllCheckbox();
-  }
-
-  function toggleSelectAll() {
-    const checkboxes = document.querySelectorAll('.bid-checkbox');
-    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-    checkboxes.forEach(cb => {
-      cb.checked = !allChecked;
-      if (!allChecked) selectedBids.add(cb.value);
-      else selectedBids.delete(cb.value);
-    });
-  }
-
-  function updateSelectAllCheckbox() {
-    const checkboxes = document.querySelectorAll('.bid-checkbox');
-    const allChecked = checkboxes.length > 0 && Array.from(checkboxes).every(cb => cb.checked);
-    document.getElementById('selectAll').checked = allChecked;
-  }
-
-  function banSelected() {
-    if (selectedBids.size === 0) { showToast('Select bids first!', true); return; }
-    if (!confirm(`Ban ${selectedBids.size} selected bid(s)? This will delete them.`)) return;
-    // Delete selected bids
-    Promise.all(Array.from(selectedBids).map(id => db.from('bids').delete().eq('id', id)))
-      .then(() => { showToast('✅ Selected bids deleted!'); selectedBids.clear(); loadData(); })
-      .catch(e => showToast('Error: ' + e.message, true));
-  }
-
-  async function banUser(email, fingerprint) {
-    if (!confirm(`Ban user with email: ${email || 'unknown'}? All their bids will be deleted.`)) return;
-    let query = db.from('bids').delete();
-    if (email && email !== '—') query = query.eq('email', email);
-    else query = query.eq('device_fingerprint', fingerprint);
-    const { error } = await query;
-    if (error) showToast('Error: ' + error.message, true);
-    else { showToast('✅ User banned and bids deleted!'); loadData(); closeModal(); }
-  }
-
-  async function banDevice(fingerprint) {
-    if (!confirm(`Ban ALL bids from this device?`)) return;
-    const { error } = await db.from('bids').delete().eq('device_fingerprint', fingerprint);
-    if (error) showToast('Error: ' + error.message, true);
-    else { showToast('✅ Device banned!'); loadData(); closeModal(); }
+  async function sendManualEmail(bidId) {
+    const bid = allBids.find(b => b.id === bidId);
+    if (!bid || !bid.email) { showToast('No email found!', true); return; }
+    const msg = prompt(`Message to ${bid.bidder_name}:`, `You've been outbid on ${SLOT_NAMES[bid.slot_id] || bid.slot_id}! Current top bid: ₹${topBidPerSlot[bid.slot_id]?.bid_amount || 0}`);
+    if (!msg) return;
+    try {
+      await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+        to_email: bid.email,
+        to_name: bid.bidder_name,
+        slot_name: SLOT_NAMES[bid.slot_id] || bid.slot_id,
+        new_amount: msg,
+        your_amount: bid.bid_amount
+      });
+      showToast('📧 Email sent!');
+    } catch(e) { showToast('Failed: ' + e.text, true); }
   }
 
   async function deleteBid(id) {
     if (!confirm('Delete this bid?')) return;
     const { error } = await db.from('bids').delete().eq('id', id);
+    if (error) showToast('Failed: ' + error.message, true);
+    else { showToast('Deleted!'); loadData(); }
+  }
+
+  async function banUser(email, fingerprint) {
+    if (!confirm(`Ban user? ${email || fingerprint}`)) return;
+    let query = db.from('bids').delete();
+    if (email && email !== '—') query = query.eq('email', email);
+    else query = query.eq('device_fingerprint', fingerprint);
+    const { error } = await query;
     if (error) showToast('Error: ' + error.message, true);
-    else { showToast('✅ Bid deleted!'); loadData(); closeModal(); }
+    else { showToast('✅ User banned!'); loadData(); closeModal(); }
+  }
+
+  async function banDevice(fingerprint) {
+    if (!confirm('Ban all bids from this device?')) return;
+    const { error } = await db.from('bids').delete().eq('device_fingerprint', fingerprint);
+    if (error) showToast('Error: ' + error.message, true);
+    else { showToast('✅ Device banned!'); loadData(); closeModal(); }
+  }
+
+  async function clearSlot() {
+    const slot = document.getElementById('filterSlot').value;
+    if (slot === 'all') { showToast('Select a specific slot from filter!', true); return; }
+    if (!confirm(`Clear ALL bids for ${SLOT_NAMES[slot]}?`)) return;
+    const { error } = await db.from('bids').delete().eq('slot_id', slot);
+    if (error) showToast('Failed: ' + error.message, true);
+    else { showToast('Slot cleared!'); loadData(); }
+  }
+
+  async function clearAllBids() {
+    if (!confirm('DELETE ALL BIDS? Cannot be undone!')) return;
+    if (!confirm('ARE YOU 100% SURE?')) return;
+    const { error } = await db.from('bids').delete().gte('bid_amount', 0);
+    if (error) showToast('Failed: ' + error.message, true);
+    else { showToast('All bids cleared!'); loadData(); }
   }
 
   function exportAllCSV() {
-    const rows = [['Slot', 'Name', 'Email', 'Bid (₹)', 'IP', 'Device Fingerprint', 'Location', 'Time']];
+    const rows = [['Slot', 'Name', 'Email', 'Bid (₹)', 'IP', 'Device FP', 'Location', 'Time']];
     for (const b of allBids) {
-      rows.push([
-        SLOT_NAMES[b.slot_id] || b.slot_id,
-        b.bidder_name,
-        b.email || '',
-        b.bid_amount,
-        b.ip_address || '',
-        b.device_fingerprint || '',
-        b.geo_location || '',
-        b.created_at || ''
-      ]);
+      rows.push([SLOT_NAMES[b.slot_id] || b.slot_id, b.bidder_name, b.email || '', b.bid_amount, b.ip_address || '', b.device_fingerprint || '', b.geo_location || '', b.created_at || '']);
     }
-    downloadCSV(rows, 'bhaamtoon-intel-bids.csv');
+    downloadCSV(rows, 'bhaamtoon-all-bids.csv');
     showToast('📥 Exported!');
   }
 
-  function exportIntelligenceCSV() {
-    const rows = [['Device Fingerprint', 'Emails Used', 'Names Used', 'Bid Count', 'Suspicious', 'Total Amount']];
+  function exportWinnersCSV() {
+    const rows = [['Slot', 'Winner Name', 'Email', 'Winning Bid (₹)']];
+    for (const [slotId, b] of Object.entries(topBidPerSlot)) {
+      rows.push([SLOT_NAMES[slotId] || slotId, b.bidder_name, b.email || '', b.bid_amount]);
+    }
+    downloadCSV(rows, 'bhaamtoon-winners.csv');
+    showToast('🏆 Winners exported!');
+  }
+
+  function exportIntelCSV() {
+    const rows = [['Device FP', 'Emails Used', 'Names Used', 'Bid Count', 'Total Amount']];
     for (const [fp, bids] of Object.entries(deviceGroups)) {
       const emails = [...new Set(bids.map(b => b.email).filter(e => e))].join(' | ');
       const names = [...new Set(bids.map(b => b.bidder_name))].join(' | ');
       const totalAmount = bids.reduce((sum, b) => sum + b.bid_amount, 0);
-      const isSuspicious = suspiciousDevices.some(d => d.fingerprint === fp);
-      rows.push([fp, emails, names, bids.length, isSuspicious ? 'YES' : 'NO', totalAmount]);
+      rows.push([fp, emails, names, bids.length, totalAmount]);
     }
-    downloadCSV(rows, 'bhaamtoon-device-intel.csv');
-    showToast('🕵️ Intelligence exported!');
+    downloadCSV(rows, 'bhaamtoon-intel.csv');
+    showToast('🕵️ Intel exported!');
   }
 
   function downloadCSV(rows, filename) {
@@ -810,12 +957,11 @@
   }
 
   function subscribeRealtime() {
-    db.channel('admin-intel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'bids' }, () => loadData())
-      .subscribe();
+    db.channel('admin-complete').on('postgres_changes', { event: '*', schema: 'public', table: 'bids' }, () => loadData()).subscribe();
   }
 
   function closeModal() { document.getElementById('userModal').classList.remove('open'); }
+  
   function showToast(msg, isError = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -823,6 +969,7 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+  
   function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   document.getElementById('userModal').addEventListener('click', e => { if(e.target === document.getElementById('userModal')) closeModal(); });
