@@ -204,6 +204,23 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { background: var(--orange); }
 
+  /* SUSPICIOUS BID FLASH */
+  .sus-flash {
+    display: none;
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(255,23,68,0.97);
+    align-items: center; justify-content: center;
+    flex-direction: column; text-align: center;
+    padding: 40px;
+    animation: susFlash 0.15s ease-out;
+  }
+  .sus-flash.show { display: flex; }
+  @keyframes susFlash { from { opacity: 0; } to { opacity: 1; } }
+  .sus-flash-icon { font-size: 4rem; margin-bottom: 16px; }
+  .sus-flash-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: #fff; letter-spacing: 4px; margin-bottom: 12px; line-height: 1; }
+  .sus-flash-msg { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: rgba(255,255,255,0.85); max-width: 320px; line-height: 1.7; margin-bottom: 24px; }
+  .sus-flash-id { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+
   .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; max-width: 480px; width: 100%; padding: 32px; position: relative; animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto; }
@@ -585,8 +602,8 @@
       <label>INSTAGRAM / LINK (optional)</label>
       <input type="text" id="bidLink" placeholder="e.g. instagram.com/myshop">
       <label>YOUR BID AMOUNT (₹) *</label>
-      <input type="number" id="bidAmount" placeholder="Enter amount" min="1">
-      <div class="min-bid-note">Min bid: current top + <strong>₹50</strong> · Must beat: <strong id="minBidDisplay">₹0</strong></div>
+      <input type="number" id="bidAmount" placeholder="Enter amount" min="1" max="9999">
+      <div class="min-bid-note">Min bid: current top + <strong>₹50</strong> · Must beat: <strong id="minBidDisplay">₹0</strong> · Max: <strong>₹9,999</strong></div>
       <label>WHAT TO SHOW? (optional)</label>
       <textarea id="bidNote" placeholder="e.g. My shop logo + @myshop"></textarea>
       <label>TOP BIDDERS</label>
@@ -616,6 +633,14 @@
       <button class="share-btn" onclick="shareBid()">📤 SHARE MY BID</button>
     </div>
   </div>
+</div>
+
+<!-- SUSPICIOUS BID OVERLAY -->
+<div class="sus-flash" id="susFlash">
+  <div class="sus-flash-icon">🚨</div>
+  <div class="sus-flash-title">SUSPICIOUS BID DETECTED</div>
+  <div class="sus-flash-msg">This bid has been flagged for manual review.<br>Unusually high jumps are logged and verified before being accepted.</div>
+  <div class="sus-flash-id" id="susFlashId">FLAG ID: —</div>
 </div>
 
 <canvas id="confettiCanvas"></canvas>
@@ -936,8 +961,12 @@
 
     if (!name) { showToast('Please enter your name', true); return; }
     if (!amount || amount <= 0) { showToast('Please enter a valid amount', true); return; }
+    if (amount > 9999) { showToast('❌ Max bid is ₹9,999', true); return; }
     if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
     if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top + 50).toLocaleString('en-IN')}`, true); return; }
+
+    // Flag suspiciously high bids (5x or more above current top)
+    if (top > 0 && amount >= top * 5) { triggerSusFlash(); }
 
     document.getElementById('confirmSlot').textContent = SLOT_NAMES[currentSlot];
     document.getElementById('confirmName').textContent = name;
@@ -1018,10 +1047,15 @@
     
     if (!name) { showToast('Please enter your name', true); return; }
     if (!amount || amount<=0) { showToast('Please enter a valid amount', true); return; }
+    if (amount > 9999) { showToast('❌ Max bid is ₹9,999', true); return; }
     if (!verifiedEmail) { showToast('Please verify your email first', true); return; }
     
     const top = topBids[currentSlot] || 0;
     if (amount <= top + 49) { showToast(`Bid must be at least ₹${(top+50).toLocaleString('en-IN')}`, true); return; }
+
+    // ─── block if already the top bidder on this slot ───
+    const { data: topBidData } = await db.from('bids').select('email').eq('slot_id', currentSlot).order('bid_amount', { ascending: false }).limit(1);
+    if (topBidData && topBidData.length > 0 && topBidData[0].email === verifiedEmail) { showToast('❌ You\'re already the top bidder on this slot!', true); return; }
     
     const { data: existing } = await db.from('bids').select('bidder_name').eq('email', verifiedEmail).limit(1);
     if (existing && existing.length > 0 && name !== existing[0].bidder_name) {
@@ -1071,6 +1105,14 @@
       if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '✅ CONFIRM BID'; }
       if (btn) { btn.disabled = false; btn.textContent = 'REVIEW BID →'; }
     }
+  }
+
+  function triggerSusFlash() {
+    const overlay = document.getElementById('susFlash');
+    const flagId = 'BT-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+    document.getElementById('susFlashId').textContent = 'FLAG ID: ' + flagId;
+    overlay.classList.add('show');
+    setTimeout(() => overlay.classList.remove('show'), 3500);
   }
 
   function showToast(msg, err=false) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
